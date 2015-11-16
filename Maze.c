@@ -13,8 +13,15 @@
 #  include <GL/freeglut.h>
 #endif
 
+
+//setting the window height and width
+const float w = 800;
+const float h = 800;
+const float wMid = w/2;
+const float hMid = h/2;
 //camera positions
-float camPos[] = {0, 0, 0};
+float camPos[] = {50, 100, 50};
+float camPos2[] = {10,5,1};
 
 //maze variables
 int size;
@@ -27,6 +34,48 @@ bool visited[22][22];
 
 //bool on off's
 bool calcMode = true;
+
+//creating window
+int window1;
+int window2;
+
+//camera variables
+float movementSpeedFactor;
+float pitchSensitivity;
+float yawSensitivity;
+float position;
+float rotation;
+float speed;
+const double rad = 3.141592654 / 180.0;
+
+
+void initCamera(){
+	position = 0;
+	rotation = 0;
+	speed = 0;
+
+	movementSpeedFactor = 100.0;
+	pitchSensitivity = 0.2; // up and down
+	yawSensitivity   = 0.2; // left and right
+
+
+}
+
+void camera(void){
+	initCamera();
+	//glfwSetMousePos(wMid,hMid);
+
+}
+
+
+
+void mouseMove(int mouseX, int mouseY){
+
+
+}
+
+
+
 
 //used the link to help me create the maze and solve it 
 //http://algs4.cs.princeton.edu/41graph/Maze.java.html
@@ -102,8 +151,8 @@ void generateMaze(){
 void drawMesh(){
 	for(int x = 1; x<=size;x++){
 		for(int z=1; z<=size;z++){
+			glColor4f(1,1,1,0.5);
 			if(south[x][z]){
-				glColor4f(1,0,0,0.5);
 				glBegin(GL_QUADS);
 					glVertex3f(x,10,z);
 					glVertex3f(x,0,z);
@@ -112,30 +161,21 @@ void drawMesh(){
 				glEnd();
 			}
 			if(north[x][z]){
-				glColor4f(0,1,0,0.5);
-				glBegin(GL_QUADS);
-					glVertex3f(x,10,z+1);
+				glBegin(GL_LINES);
 					glVertex3f(x,0,z+1);
 					glVertex3f(x+1,0,z+1);
-					glVertex3f(x+1,10,z+1);
 				glEnd();
 			}
 			if(west[x][z]){
-				glColor4f(0,0,1,0.5);
-				glBegin(GL_QUADS);
-					glVertex3f(x,10,z);
+				glBegin(GL_LINES);
 					glVertex3f(x,0,z);
 					glVertex3f(x,0,z+1);
-					glVertex3f(x,10,z+1);
 				glEnd();
 			}
 			if(east[x][z]){
-				glColor4f(0.76,0,1,0.5);
-				glBegin(GL_QUADS);
-					glVertex3f(x+1,10,z);
+				glBegin(GL_LINES);
 					glVertex3f(x+1,0,z);
 					glVertex3f(x+1,0,z+1);
-					glVertex3f(x+1,10,z+1);
 				glEnd();
 			}
 		}
@@ -190,7 +230,9 @@ void special(int key, int x, int y)
 			break;
 
 		case GLUT_KEY_UP:
-			camPos[2] -= 2;
+			if(camPos[2]>70){
+				camPos[2] -= 2;
+			}
 			break;
 
 		case GLUT_KEY_DOWN:
@@ -212,6 +254,48 @@ void special(int key, int x, int y)
 	}
 	glutPostRedisplay();
 }
+void special2(int key, int x, int y)
+{
+	/* arrow key presses move the camera */
+	switch(key)
+	{
+		case GLUT_KEY_LEFT:
+			//if(camPos2[0]>-10){
+				camPos2[0] -= 1;
+			//}
+			break;
+
+		case GLUT_KEY_RIGHT:
+			//if(camPos2[0]<size+70){
+				camPos2[0] += 1;
+			//}
+			break;
+
+		case GLUT_KEY_UP:
+			//if(camPos2[2]>70){
+				camPos2[2] -= 1;
+			//}
+			break;
+
+		case GLUT_KEY_DOWN:
+			//if(camPos2[2]<size+70){
+				camPos2[2] += 1;
+			//}
+			break;
+		
+		case GLUT_KEY_HOME:
+			camPos2[1] += 1;
+			break;
+
+		case GLUT_KEY_END:
+			//if(camPos2[1]>10){
+				camPos2[1] -= 1;
+			//}
+			break;
+
+	}
+	glutPostRedisplay();
+}
 
 void init(void){
 	glClearColor(0, 0, 0, 0);
@@ -222,8 +306,23 @@ void init(void){
 	gluPerspective(45, 1, 1, 1000);
 
 }
+void init2(void){
+	glClearColor(0, 0, 0, 0);
+	glColor3f(1, 1, 1);
 
-void display(void)
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	gluPerspective(45, 1, 1, 1000);
+
+}
+void idle(){
+	glutSetWindow(window1);
+	glutPostRedisplay();
+	glutSetWindow(window2);
+	glutPostRedisplay();
+}
+
+void display()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glMatrixMode(GL_MODELVIEW);
@@ -241,6 +340,43 @@ void display(void)
 	glutSwapBuffers();
 }
 
+void display2()
+{
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+
+	gluLookAt(camPos2[0], camPos2[1], camPos2[2], 0,0,0, 0,1,0);
+	glColor3f(1,1,1);
+
+	//code for drawing the maze
+	size = 20;
+	mazeStarter();
+	generateMaze();
+	drawMesh();
+
+	glutSwapBuffers();
+}
+
+void glutCallBacks(){
+	glutDisplayFunc(display);	//registers "display" as the display callback function
+	glutKeyboardFunc(keyboard); //registers "keyboard" as the keyboard callback function
+	glutSpecialFunc(special);	//registers "special" as the special function callback
+	glutIdleFunc(idle);
+}
+
+
+
+void glutCallBacks2(){
+	glutDisplayFunc(display2);	//registers "display" as the display callback function
+	glutSpecialFunc(special2);
+	//glutKeyboardFunc(keyboard);
+	//glutSpecialFunc(special);
+	//initMenu();
+
+}
+
+
 /* main function - program entry point */
 int main(int argc, char** argv)
 {
@@ -249,19 +385,26 @@ int main(int argc, char** argv)
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
 	
 	
-	glutInitWindowSize(800, 800);
-	glutInitWindowPosition(100, 100);
 
-	glutCreateWindow("Maze");	//creates the window
-	glutDisplayFunc(display);	//registers "display" as the display callback function
-	glutKeyboardFunc(keyboard);
-	glutSpecialFunc(special);
+	glutInitWindowSize(w, h);
+	glutInitWindowPosition(100, 100);
+	window1 = glutCreateWindow("Maze 2D");	//creates the window
+	glutCallBacks();
+	init();
+
+
+	
+	glutInitWindowSize(w, h);
+	glutInitWindowPosition(1000, 100);	
+	window2 = glutCreateWindow("Maze 3D");
+	glutCallBacks2();
+	init2();
 
 
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	init();
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);	
+
 
 	glutMainLoop();				//starts the event loop
 
