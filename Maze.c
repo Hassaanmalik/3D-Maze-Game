@@ -15,6 +15,14 @@
 
 //camera positions
 float camPos[] = {0, 0, 0};
+float camPos2[] = {10,5,1};
+
+
+//setting the window height and width
+const float w = 800;
+const float h = 800;
+const float wMid = w/2;
+const float hMid = h/2;
 
 //maze variables
 int size;
@@ -27,6 +35,21 @@ bool visited[22][22];
 
 //bool on off's
 bool calcMode = true;
+
+//creating window
+int window1;
+int window2;
+
+
+//camera variables
+float movementSpeedFactor;
+float pitchSensitivity;
+float yawSensitivity;
+float position;
+float rotation;
+float speed;
+const double rad = 3.141592654 / 180.0;
+
 
 //used the link to help me create the maze and solve it 
 //http://algs4.cs.princeton.edu/41graph/Maze.java.html
@@ -213,6 +236,50 @@ void special(int key, int x, int y)
 	glutPostRedisplay();
 }
 
+void special2(int key, int x, int y)
+{
+	/* arrow key presses move the camera */
+	switch(key)
+	{
+		case GLUT_KEY_LEFT:
+			//if(camPos2[0]>-10){
+				camPos2[0] -= 1;
+			//}
+			break;
+
+		case GLUT_KEY_RIGHT:
+			//if(camPos2[0]<size+70){
+				camPos2[0] += 1;
+			//}
+			break;
+
+		case GLUT_KEY_UP:
+			//if(camPos2[2]>70){
+			 	camPos2[2] -= 1;
+			//}
+			break;
+
+		case GLUT_KEY_DOWN:
+			//if(camPos2[2]<size+70){
+				camPos2[2] += 1;
+			//}
+			break;
+		
+		case GLUT_KEY_HOME:
+			camPos2[1] += 1;
+			break;
+
+		case GLUT_KEY_END:
+			//if(camPos2[1]>10){
+			camPos2[1] -= 1;
+			//}
+			break;
+
+	}
+	glutPostRedisplay();
+}
+
+
 void init(void){
 	glClearColor(0, 0, 0, 0);
 	glColor3f(1, 1, 1);
@@ -222,6 +289,22 @@ void init(void){
 	gluPerspective(45, 1, 1, 1000);
 
 }
+void init2(void){
+	glClearColor(0, 0, 0, 0);
+	glColor3f(1, 1, 1);
+
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	gluPerspective(45, 1, 1, 1000);
+
+}
+void idle(){
+	glutSetWindow(window1);
+	glutPostRedisplay();
+	glutSetWindow(window2);
+	glutPostRedisplay();
+}
+
 
 void display(void)
 {
@@ -240,6 +323,41 @@ void display(void)
 
 	glutSwapBuffers();
 }
+void display2()
+{
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+
+	gluLookAt(camPos2[0], camPos2[1], camPos2[2], 0,0,0, 0,1,0);
+	glColor3f(1,1,1);
+
+	//code for drawing the maze
+	size = 20;
+	mazeStarter();
+	generateMaze();
+	drawMesh();
+
+	glutSwapBuffers();
+}
+
+void glutCallBacks(){
+	glutDisplayFunc(display);	//registers "display" as the display callback function
+	glutKeyboardFunc(keyboard); //registers "keyboard" as the keyboard callback function
+	glutSpecialFunc(special);	//registers "special" as the special function callback
+	glutIdleFunc(idle);
+}
+
+
+
+void glutCallBacks2(){
+	glutDisplayFunc(display2);	//registers "display" as the display callback function
+	glutSpecialFunc(special2);
+	//glutKeyboardFunc(keyboard);
+	//glutSpecialFunc(special);
+	//initMenu();
+
+}
 
 /* main function - program entry point */
 int main(int argc, char** argv)
@@ -249,19 +367,22 @@ int main(int argc, char** argv)
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
 	
 	
-	glutInitWindowSize(800, 800);
+	glutInitWindowSize(w, h);
 	glutInitWindowPosition(100, 100);
+	window1 = glutCreateWindow("Maze Top View");	//creates the window
+	glutCallBacks();
+	init();
 
-	glutCreateWindow("Maze");	//creates the window
-	glutDisplayFunc(display);	//registers "display" as the display callback function
-	glutKeyboardFunc(keyboard);
-	glutSpecialFunc(special);
-
+	glutInitWindowSize(w,h);
+	glutInitWindowPosition(1000,100);
+	window2 = glutCreateWindow("Maze 1st Person");
+	glutCallBacks2();
+	init2();
 
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	init();
+
 
 	glutMainLoop();				//starts the event loop
 
