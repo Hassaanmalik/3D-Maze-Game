@@ -14,7 +14,7 @@
 #endif
 
 //camera positions
-float camPos[] = {50, 100, 50};
+float camPos[] = {0, 0, 0};
 
 //maze variables
 int size;
@@ -102,8 +102,8 @@ void generateMaze(){
 void drawMesh(){
 	for(int x = 1; x<=size;x++){
 		for(int z=1; z<=size;z++){
-			glColor4f(1,1,1,0.5);
 			if(south[x][z]){
+				glColor4f(1,0,0,0.5);
 				glBegin(GL_QUADS);
 					glVertex3f(x,10,z);
 					glVertex3f(x,0,z);
@@ -112,21 +112,30 @@ void drawMesh(){
 				glEnd();
 			}
 			if(north[x][z]){
-				glBegin(GL_LINES);
+				glColor4f(0,1,0,0.5);
+				glBegin(GL_QUADS);
+					glVertex3f(x,10,z+1);
 					glVertex3f(x,0,z+1);
 					glVertex3f(x+1,0,z+1);
+					glVertex3f(x+1,10,z+1);
 				glEnd();
 			}
 			if(west[x][z]){
-				glBegin(GL_LINES);
+				glColor4f(0,0,1,0.5);
+				glBegin(GL_QUADS);
+					glVertex3f(x,10,z);
 					glVertex3f(x,0,z);
 					glVertex3f(x,0,z+1);
+					glVertex3f(x,10,z+1);
 				glEnd();
 			}
 			if(east[x][z]){
-				glBegin(GL_LINES);
+				glColor4f(0.9,0.5,0.3,0.5);
+				glBegin(GL_QUADS);
+					glVertex3f(x+1,10,z);
 					glVertex3f(x+1,0,z);
 					glVertex3f(x+1,0,z+1);
+					glVertex3f(x+1,10,z+1);
 				glEnd();
 			}
 		}
@@ -181,9 +190,7 @@ void special(int key, int x, int y)
 			break;
 
 		case GLUT_KEY_UP:
-			if(camPos[2]>70){
-				camPos[2] -= 2;
-			}
+			camPos[2] -= 2;
 			break;
 
 		case GLUT_KEY_DOWN:
