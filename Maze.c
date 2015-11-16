@@ -130,7 +130,7 @@ void drawMesh(){
 				glEnd();
 			}
 			if(east[x][z]){
-				glColor4f(0.9,0.5,0.3,0.5);
+				glColor4f(0.76,0,1,0.5);
 				glBegin(GL_QUADS);
 					glVertex3f(x+1,10,z);
 					glVertex3f(x+1,0,z);
