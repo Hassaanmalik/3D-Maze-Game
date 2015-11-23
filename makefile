@@ -9,6 +9,7 @@ LDFLAGS = -lGL -lGLU -lglut
 CFLAGS=-g -Wall -std=c++11
 CC=g++
 EXEEXT=
+RM=rm
 PROGRAM_NAME=Maze
 
 # Windows (cygwin)
@@ -28,14 +29,14 @@ endif
 run: $(PROGRAM_NAME) clean
 
 clean:
-	rm $(PROGRAM_NAME)$(EXEEXT)
-	rm *.o
+	$(RM) *.o
+	$(RM) $(PROGRAM_NAME)$(EXEEXT)
 
 #when adding additional source files, such as boilerplateClass.cpp
 #or yourFile.cpp, add the filename with an object extension below
 #ie. boilerplateClass.o and yourFile.o
 #make will automatically know that the objectfile needs to be compiled
 #form a cpp source file and find it itself :)
-$(PROGRAM_NAME): Maze.o
+$(PROGRAM_NAME): Maze.o LoadObj.o
 	$(CC) -o $@ $^ $(CFLAGS) $(LDFLAGS)
 	./$(PROGRAM_NAME)$(EXEEXT)

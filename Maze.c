@@ -13,6 +13,11 @@
 #  include <GL/freeglut.h>
 #endif
 
+#include "LoadObj.h"
+
+//Object
+LoadObj objLoadObj("ghost");
+
 //camera positions
 float camPos[] = {0, 0, 0};
 float camPos2[] = {10,5,1};
@@ -403,8 +408,10 @@ int main(int argc, char** argv)
 	glutInit(&argc, argv);		//starts up GLUT
 	
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
+
 	
-	
+	objLoadObj.setVertices();
+
 	glutInitWindowSize(w, h);
 	glutInitWindowPosition(100, 100);
 	window1 = glutCreateWindow("Maze Top View");	//creates the window
