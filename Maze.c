@@ -16,7 +16,7 @@
 #include "LoadObj.h"
 
 //Object
-LoadObj objLoadObj("ghost");
+LoadObj ghostLoadObj;
 
 //camera positions
 float camPos[] = {0, 0, 0};
@@ -61,6 +61,8 @@ float rotation;
 float speed;
 const double rad = 3.141592654 / 180.0;
 
+//Object moving variables
+float ghostX, ghostY, ghostZ;
 
 //used the link to help me create the maze and solve it 
 //http://algs4.cs.princeton.edu/41graph/Maze.java.html
@@ -207,33 +209,52 @@ void drawMesh(){
 	}
 }
 
+void mtlForOBJ(){
+	float *ambient = ghostLoadObj.getAmbient();
+	float *diffuse = ghostLoadObj.getDiffuse();
+	float *specular = ghostLoadObj.getReflectivity();
+
+	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, ambient);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, diffuse);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specular);
+	//glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shine);
+}
+
 void drawObj(){
-	int numberOfFaces = objLoadObj.getNumberOfFaces();
-	//printf("%i\n", numberOfFaces);
-	LoadObj::Face face;
-	LoadObj::Vertice vertices;
-	for(int i = 0; i < numberOfFaces-1; i++){
-		face = objLoadObj.getFaces(i);
-		//printf("%i, %i, %i, %i\n", face.p1, face.p2, face.p3, face.p4);
+	mtlForOBJ();
 
-		glBegin(GL_LINE_LOOP);
-			vertices = objLoadObj.getVertices(face.p1-1);
-			//printf("%f, %f, %f\n", vertices.x, vertices.y, vertices.z);
-			glVertex3f(vertices.x, vertices.y, vertices.z);
+	int numberOfFaces = ghostLoadObj.getNumberOfFaces();
 
-			vertices = objLoadObj.getVertices(face.p2-1);
-			//printf("%f, %f, %f\n", vertices.x, vertices.y, vertices.z);
-			glVertex3f(vertices.x, vertices.y, vertices.z);
+	LoadObj::Face face, face_normal;
+	LoadObj::Vertice vertices, vertices_normal;
+	glColor4f(0.3,0.3,0.3,0); 
+	for(int i = 1; i < numberOfFaces; i++){
+		face = ghostLoadObj.getFaces(i);
+		face_normal = ghostLoadObj.getFacesNormal(i);
 
-			vertices = objLoadObj.getVertices(face.p3-1);
-			//printf("%f, %f, %f\n", vertices.x, vertices.y, vertices.z);
-			glVertex3f(vertices.x, vertices.y, vertices.z);
+		glBegin(GL_POLYGON);
+			vertices = ghostLoadObj.getVertices(face.p1);
+			vertices_normal = ghostLoadObj.getVerticesNormal(face_normal.p1);
+			glNormal3f(vertices_normal.x+ghostX, vertices_normal.y+ghostY, vertices_normal.z+ghostZ);
+			glVertex3f(vertices.x+ghostX, vertices.y+ghostY, vertices.z+ghostZ);
 
-			vertices = objLoadObj.getVertices(face.p4-1);
-			//printf("%f, %f, %f\n", vertices.x, vertices.y, vertices.z);
-			glVertex3f(vertices.x, vertices.y, vertices.z);
+			vertices = ghostLoadObj.getVertices(face.p2);
+			vertices_normal = ghostLoadObj.getVerticesNormal(face_normal.p4);
+			glNormal3f(vertices_normal.x+ghostX, vertices_normal.y+ghostY, vertices_normal.z+ghostZ);
+			glVertex3f(vertices.x+ghostX, vertices.y+ghostY, vertices.z+ghostZ);
+
+			vertices = ghostLoadObj.getVertices(face.p3);
+			vertices_normal = ghostLoadObj.getVerticesNormal(face_normal.p4);
+			glNormal3f(vertices_normal.x+ghostX, vertices_normal.y+ghostY, vertices_normal.z+ghostZ);
+			glVertex3f(vertices.x+ghostX, vertices.y+ghostY, vertices.z+ghostZ);
+
+			vertices = ghostLoadObj.getVertices(face.p4);
+			vertices_normal = ghostLoadObj.getVerticesNormal(face_normal.p4);
+			glNormal3f(vertices_normal.x+ghostX, vertices_normal.y+ghostY, vertices_normal.z+ghostZ);
+			glVertex3f(vertices.x+ghostX, vertices.y+ghostY, vertices.z+ghostZ);
 		glEnd();
 	}
+	//printf("%f %f %f\n", ghostX, ghostY, ghostZ);
 }
 
 void cleanArrays(){
@@ -261,6 +282,24 @@ void keyboard(unsigned char key, int x, int y){
 			calcMode = true;
 			cleanArrays();
 			break;
+		/*case 'w':
+			ghostY++;
+			break;
+		case 's':
+			ghostY--;
+			break;
+		case 'a':
+			ghostX++;
+			break;
+		case 'd':
+			ghostX--;
+			break;
+		case 'c':
+			ghostZ++;
+			break;
+		case 'e':
+			ghostZ--;
+			break;*/
 			
 	}
 	glutPostRedisplay();
@@ -393,6 +432,7 @@ void display(void)
 	generateMaze();
 	drawMesh();
 	drawObj();
+
 	glutSwapBuffers();
 }
 void display2()
@@ -409,6 +449,7 @@ void display2()
 	mazeStarter();
 	generateMaze();
 	drawMesh();
+	//drawObj();
 
 	glutSwapBuffers();
 }
@@ -438,8 +479,7 @@ int main(int argc, char** argv)
 	
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
 
-	
-	objLoadObj.setVertices();
+	ghostLoadObj.loadObj("ghost", "ObjFile/");
 
 	glutInitWindowSize(w, h);
 	glutInitWindowPosition(100, 100);

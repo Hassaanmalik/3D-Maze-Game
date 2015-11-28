@@ -1,7 +1,6 @@
 //opengl cross platform includes
 #include <stdio.h>
 #include <stdlib.h>
-#include <math.h> //added math libary to code to allow for use of sin,cos and sqrt
 
 #include <vector>
 
@@ -20,45 +19,121 @@
 using namespace std;
 
 
-LoadObj::LoadObj(char *objFile){
-	this->objFile = objFile;
+LoadObj::LoadObj(){
 }
 
 //Deconstructor
 LoadObj::~LoadObj(){
 }
 
-void LoadObj::setVertices(){
-	openFile();
+//**************************//
+//**** Public Functions ****//
+//**************************//
+
+void LoadObj::loadObj(char *fileName, char *filePath){
+	this->fileName = fileName;
+	this->filePath = filePath;
+	setObjVariables();
+}
+
+/*LoadObj getNumberOfFaces();*/
+int LoadObj::getNumberOfFaces(){
+	return numberOfFace;
+}
+
+/*LoadObj getVertices(int verticeNumber);*/
+LoadObj::Vertice LoadObj::getVertices(int verticeNumber){
+	return vertices.at(verticeNumber-1);
+}
+/*LoadObj getVerticesNormal(int verticeNumber);*/
+LoadObj::Vertice LoadObj::getVerticesNormal(int verticeNumber){
+	return vertices_normal.at(verticeNumber-1);
+}
+
+/*LoadObj getFaces(int faceNumber);*/
+LoadObj::Face LoadObj::getFaces(int faceNumber){
+	return faces.at(faceNumber-1);
+}
+/*LoadObj getFacesNormal(int faceNumber);*/
+LoadObj::Face LoadObj::getFacesNormal(int faceNumber){
+	return faces_normal.at(faceNumber-1);
+}
+
+
+/*LoadObj getAmbient();*/
+float* LoadObj::getAmbient(){
+	float localAmbient[4] = {ambient.r, ambient.g, ambient.b, dissolve};
+	return localAmbient;
+}
+/*LoadObj getDiffuse();*/
+float* LoadObj::getDiffuse(){
+	float localDiffuse[4] = {diffuse.r, diffuse.g, diffuse.b, dissolve};
+	return localDiffuse;
+}
+/*LoadObj getReflectivity();*/
+float* LoadObj::getReflectivity(){
+	float localReflectivity[4] = {specularReflectivity.r, specularReflectivity.g, specularReflectivity.b, dissolve};
+	return localReflectivity;
+}
+/*LoadObj getEmission();*/
+float* LoadObj::getEmission(){
+	float localEmission[3] = {emission.r, emission.g, emission.b};
+	return localEmission;
+}
+
+
+
+//***************************//
+//**** Private Functions ****//
+//***************************//
+char *LoadObj::openFile(char *fileType){
+  	char *str = (char *)malloc(strlen(filePath)+strlen(fileName)+strlen(fileType)+1);
+	strcpy(str, filePath);
+	strcat(str, fileName);
+	strcat(str, fileType);
+	return str;
+}
+
+void LoadObj::setObjVariables(){
+	char *fileType = ".obj";
+	char *str = openFile(fileType);
+	FILE *objfile = fopen(str, "r");
+
 	numberOfFace = 0;
-	if(file){
+	if(objfile){
 		while(1){
-			char lineHeader[128];
-			int res = fscanf(file, "%s", lineHeader);
+			char lineHeader[32];
+			int res = fscanf(objfile, "%s", lineHeader);
 			if(res == EOF){
 				break;
 			}else{
-				if(strcmp(lineHeader, "v") == 0){
+				if(strcmp(lineHeader, "#") == 0){
+				}else if(strcmp(lineHeader, "mtllib") == 0){
+					setObjMaterial();
+				}/*else if(strcmp(lineHeader, "o") == 0){
+					//To Use multiple materials from one file 
+						//I need to make all the variables into array
+				}*/else if(strcmp(lineHeader, "v") == 0){//Sets the vertices for the faces
 					Vertice temp_vertice;
-					fscanf(file, "%f %f %f\n", 
+					fscanf(objfile, "%f %f %f\n", 
 							&temp_vertice.x, &temp_vertice.y, &temp_vertice.z);
 
 					vertices.push_back(temp_vertice);
-				}else if(strcmp(lineHeader, "vn") == 0){
+				}else if(strcmp(lineHeader, "vn") == 0){//Sets the vertices for face normals
 					Vertice temp_vertice_normal;
-					fscanf(file, "%f %f %f\n", 
+					fscanf(objfile, "%f %f %f\n", 
 							&temp_vertice_normal.x, &temp_vertice_normal.y, &temp_vertice_normal.z);
 
 					vertices_normal.push_back(temp_vertice_normal);
-				}else if(strcmp(lineHeader, "vt") == 0){
+				}else if(strcmp(lineHeader, "vt") == 0){//Sets the vertices for face textures
 					Vertice temp_vertice_texture;
-					fscanf(file, "%f %f %f\n", 
+					fscanf(objfile, "%f %f %f\n", 
 							&temp_vertice_texture.x, &temp_vertice_texture.y);
 
 					vertices_texture.push_back(temp_vertice_texture);
-				}else if(strcmp(lineHeader, "f") == 0){
+				}else if(strcmp(lineHeader, "f") == 0){//Sets the face, face textures and face normals
 					Face temp_face, temp_face_texture, temp_face_normal;
-					fscanf(file, "%i/%i/%i %i/%i/%i %i/%i/%i %i/%i/%i\n", 
+					fscanf(objfile, "%i/%i/%i %i/%i/%i %i/%i/%i %i/%i/%i\n", 
 							&temp_face.p1, &temp_face_texture.p1, &temp_face_normal.p1,
 							&temp_face.p2, &temp_face_texture.p2, &temp_face_normal.p2,
 							&temp_face.p3, &temp_face_texture.p3, &temp_face_normal.p3,
@@ -67,38 +142,68 @@ void LoadObj::setVertices(){
 					faces_texture.push_back(temp_face_texture);
 					faces_normal.push_back(temp_face_normal);
 					numberOfFace++;
-				}
-				/*else if(strcmp(lineHeader, "#") == 0){
-				}else if(strcmp(lineHeader, "o") == 0){
-				}else if(strcmp(lineHeader, "mtllib") == 0){
-				}else if(strcmp(lineHeader, "usemtl") == 0){
+				}/*else if(strcmp(lineHeader, "usemtl") == 0){
+					//Need to implement newmtl from setObjMaterial
 				}else if(strcmp(lineHeader, "s") == 0){
+					//Find out what this does and how to use this
 				}*/
 			}
 		}
-		fclose(file);
+		fclose(objfile);
 	}
 }
-/*LoadObj getNumberOfFaces();*/
-int LoadObj::getNumberOfFaces(){
-	return numberOfFace;
-}
 
-/*LoadObj getVertices(int verticeNumber);*/
-LoadObj::Vertice LoadObj::getVertices(int verticeNumber){
-	return vertices.at(verticeNumber);
-}
+/*LoadObj setObjMaterial();*/
+void LoadObj::setObjMaterial(){
+	char *str = openFile(".mtl");
+	FILE *mtlfile = fopen(str, "r");
 
-/*LoadObj getFaces(int faceNumber);*/
-LoadObj::Face LoadObj::getFaces(int faceNumber){
-	return faces.at(faceNumber);
-}
+	if(mtlfile){
+		while(1){
+			char lineHeader[32];
+			int res = fscanf(mtlfile, "%s", lineHeader);
+			//printf("%s\n", lineHeader);
+			if(res == EOF){
+				break;
+			}else{
 
-void LoadObj::openFile(){
-  	char str[100];
-	strcpy(str, "ObjFile/");
-	strcat(str, objFile);
-	strcat(str, ".obj");
-	path = str;
-	file = fopen(path, "r");
+				if(strcmp(lineHeader, "#") == 0){
+				}/*else if(strcmp(lineHeader, "newmtl") == 0){
+					//To Use multiple materials from one file 
+						//I need to make all the variables into array
+				}*/else if(strcmp(lineHeader, "Ns") == 0){//Sets the phong BRDF exponent for the reflective component, value between 1 and 1000 is required.
+					fscanf(mtlfile, "%f\n", &phongSpecular);
+				}else if(strcmp(lineHeader, "Ka") == 0){//Sets the ambient constant color of the material
+					fscanf(mtlfile, "%f %f %f\n", &ambient.r, &ambient.g, &ambient.b);
+				}else if(strcmp(lineHeader, "Kd") == 0){//Sets the diffuse constant color of the material
+					fscanf(mtlfile, "%f %f %f\n", &diffuse.r, &diffuse.g, &diffuse.b);
+				}else if(strcmp(lineHeader, "Ks") == 0){//Sets the specular reflectivity constant color of the material
+					fscanf(mtlfile, "%f %f %f\n", &specularReflectivity.r, &specularReflectivity.g, &specularReflectivity.b);
+				}else if(strcmp(lineHeader, "Ke") == 0){//Sets the emission constant color of the material
+					fscanf(mtlfile, "%f %f %f\n", &emission.r, &emission.g, &emission.b);
+				}else if(strcmp(lineHeader, "Ni") == 0){//Sets the refraction index, values greater then 1. A value of 1 will cause no refraction
+					fscanf(mtlfile, "%f\n", &refraction);
+				}else if(strcmp(lineHeader, "d") == 0){//Sets the dissolve factor, values between 0 and 1. 0 is completely transparent, 1 is opaque
+					fscanf(mtlfile, "%f\n", &dissolve);
+				}else if(strcmp(lineHeader, "illum") == 0){//Sets the illumination, values (0, 1, 2). 0 desable light, 1 ambient and diffuse (specular reflectivity is black), 2 for full light
+					fscanf(mtlfile, "%i\n", &illumination);
+				}/*else if(strcmp(lineHeader, "sharpness") == 0){
+					//Find out what this does and how to use this
+				}else if(strcmp(lineHeader, "map_Kd") == 0){
+					//Find out what this does and how to use this
+				}else if(strcmp(lineHeader, "map_Ks") == 0){
+					//Find out what this does and how to use this
+				}else if(strcmp(lineHeader, "map_Ka") == 0){
+					//Find out what this does and how to use this
+				}else if(strcmp(lineHeader, "map_Bump") == 0){
+					//Find out what this does and how to use this
+				}else if(strcmp(lineHeader, "map_d") == 0){
+					//Find out what this does and how to use this
+				}else if(strcmp(lineHeader, "refl") == 0){
+					//Find out what this does and how to use this
+				}*/
+			}
+		}
+		fclose(mtlfile);
+	}
 }
