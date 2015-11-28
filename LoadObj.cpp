@@ -19,25 +19,6 @@
 
 using namespace std;
 
-struct Vertice{
-	float x;
-	float y;
-	float z;
-};
-struct Face{
-	int p1;
-	int p2;
-	int p3;
-	int p4;
-};
-
-vector<Vertice>vertices;
-vector<Vertice>vertices_texture;
-vector<Vertice>vertices_normal;
-vector<Face>faces;
-vector<Face>faces_texture;
-vector<Face>faces_normal;
-
 
 LoadObj::LoadObj(char *objFile){
 	this->objFile = objFile;
@@ -49,6 +30,7 @@ LoadObj::~LoadObj(){
 
 void LoadObj::setVertices(){
 	openFile();
+	numberOfFace = 0;
 	if(file){
 		while(1){
 			char lineHeader[128];
@@ -76,14 +58,15 @@ void LoadObj::setVertices(){
 					vertices_texture.push_back(temp_vertice_texture);
 				}else if(strcmp(lineHeader, "f") == 0){
 					Face temp_face, temp_face_texture, temp_face_normal;
-					fscanf(file, "%d/%d/%d %d/%d/%d %d/%d/%d\n", 
-							&temp_face.p1, &temp_face.p2, &temp_face.p3, &temp_face.p4,
-							&temp_face_texture.p1, &temp_face_texture.p2, &temp_face_texture.p3, &temp_face_texture.p4,
-							&temp_face_normal.p1, &temp_face_normal.p2, &temp_face_normal.p3, &temp_face_normal.p4);
-
+					fscanf(file, "%i/%i/%i %i/%i/%i %i/%i/%i %i/%i/%i\n", 
+							&temp_face.p1, &temp_face_texture.p1, &temp_face_normal.p1,
+							&temp_face.p2, &temp_face_texture.p2, &temp_face_normal.p2,
+							&temp_face.p3, &temp_face_texture.p3, &temp_face_normal.p3,
+							&temp_face.p4, &temp_face_texture.p4, &temp_face_normal.p4);
 					faces.push_back(temp_face);
 					faces_texture.push_back(temp_face_texture);
 					faces_normal.push_back(temp_face_normal);
+					numberOfFace++;
 				}
 				/*else if(strcmp(lineHeader, "#") == 0){
 				}else if(strcmp(lineHeader, "o") == 0){
@@ -95,6 +78,20 @@ void LoadObj::setVertices(){
 		}
 		fclose(file);
 	}
+}
+/*LoadObj getNumberOfFaces();*/
+int LoadObj::getNumberOfFaces(){
+	return numberOfFace;
+}
+
+/*LoadObj getVertices(int verticeNumber);*/
+LoadObj::Vertice LoadObj::getVertices(int verticeNumber){
+	return vertices.at(verticeNumber);
+}
+
+/*LoadObj getFaces(int faceNumber);*/
+LoadObj::Face LoadObj::getFaces(int faceNumber){
+	return faces.at(faceNumber);
 }
 
 void LoadObj::openFile(){

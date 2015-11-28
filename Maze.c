@@ -207,6 +207,35 @@ void drawMesh(){
 	}
 }
 
+void drawObj(){
+	int numberOfFaces = objLoadObj.getNumberOfFaces();
+	//printf("%i\n", numberOfFaces);
+	LoadObj::Face face;
+	LoadObj::Vertice vertices;
+	for(int i = 0; i < numberOfFaces-1; i++){
+		face = objLoadObj.getFaces(i);
+		//printf("%i, %i, %i, %i\n", face.p1, face.p2, face.p3, face.p4);
+
+		glBegin(GL_LINE_LOOP);
+			vertices = objLoadObj.getVertices(face.p1-1);
+			//printf("%f, %f, %f\n", vertices.x, vertices.y, vertices.z);
+			glVertex3f(vertices.x, vertices.y, vertices.z);
+
+			vertices = objLoadObj.getVertices(face.p2-1);
+			//printf("%f, %f, %f\n", vertices.x, vertices.y, vertices.z);
+			glVertex3f(vertices.x, vertices.y, vertices.z);
+
+			vertices = objLoadObj.getVertices(face.p3-1);
+			//printf("%f, %f, %f\n", vertices.x, vertices.y, vertices.z);
+			glVertex3f(vertices.x, vertices.y, vertices.z);
+
+			vertices = objLoadObj.getVertices(face.p4-1);
+			//printf("%f, %f, %f\n", vertices.x, vertices.y, vertices.z);
+			glVertex3f(vertices.x, vertices.y, vertices.z);
+		glEnd();
+	}
+}
+
 void cleanArrays(){
 	//reset all the arrays 
 	for(int x=0; x< size+2;x++){
@@ -363,7 +392,7 @@ void display(void)
 	mazeStarter();
 	generateMaze();
 	drawMesh();
-
+	drawObj();
 	glutSwapBuffers();
 }
 void display2()
