@@ -36,6 +36,54 @@ void LoadObj::loadObj(char *fileName, char *filePath){
 	setObjVariables();
 }
 
+/*LoadObj mtlForOBJ();*/
+void LoadObj::mtlForOBJ(){
+	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, getAmbient());
+	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, getDiffuse());
+	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, getReflectivity());
+	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, getPhongSpecular());
+}
+
+/*LoadObj drawObj();*/
+void LoadObj::drawObj(){
+	int numberOfFaces = getNumberOfFaces();
+
+	Face face, face_normal;
+	Vertice vertices, vertices_normal;
+	//glColor4f(0.3,0.3,0.3,0); 
+	for(int i = 1; i < numberOfFaces; i++){
+		face = getFaces(i);
+		face_normal = getFacesNormal(i);
+
+		glBegin(GL_POLYGON);
+			vertices = getVertices(face.p1);
+			vertices_normal = getVerticesNormal(face_normal.p1);
+			glNormal3f(vertices_normal.x, vertices_normal.y, vertices_normal.z);
+			glVertex3f(vertices.x, vertices.y, vertices.z);
+
+			vertices = getVertices(face.p2);
+			vertices_normal = getVerticesNormal(face_normal.p4);
+			glNormal3f(vertices_normal.x, vertices_normal.y, vertices_normal.z);
+			glVertex3f(vertices.x, vertices.y, vertices.z);
+
+			vertices = getVertices(face.p3);
+			vertices_normal = getVerticesNormal(face_normal.p4);
+			glNormal3f(vertices_normal.x, vertices_normal.y, vertices_normal.z);
+			glVertex3f(vertices.x, vertices.y, vertices.z);
+
+			vertices = getVertices(face.p4);
+			vertices_normal = getVerticesNormal(face_normal.p4);
+			glNormal3f(vertices_normal.x, vertices_normal.y, vertices_normal.z);
+			glVertex3f(vertices.x, vertices.y, vertices.z);
+		glEnd();
+	}
+}
+
+
+//***************************//
+//**** Private Functions ****//
+//***************************//
+
 /*LoadObj getNumberOfFaces();*/
 int LoadObj::getNumberOfFaces(){
 	return numberOfFace;
@@ -60,6 +108,10 @@ LoadObj::Face LoadObj::getFacesNormal(int faceNumber){
 }
 
 
+/*LoadObj getPhongSpecular();*/
+float LoadObj::getPhongSpecular(){
+	return phongSpecular;
+}
 /*LoadObj getAmbient();*/
 float* LoadObj::getAmbient(){
 	float localAmbient[4] = {ambient.r, ambient.g, ambient.b, dissolve};
@@ -77,15 +129,10 @@ float* LoadObj::getReflectivity(){
 }
 /*LoadObj getEmission();*/
 float* LoadObj::getEmission(){
-	float localEmission[3] = {emission.r, emission.g, emission.b};
+	float localEmission[4] = {emission.r, emission.g, emission.b, dissolve};
 	return localEmission;
 }
 
-
-
-//***************************//
-//**** Private Functions ****//
-//***************************//
 char *LoadObj::openFile(char *fileType){
   	char *str = (char *)malloc(strlen(filePath)+strlen(fileName)+strlen(fileType)+1);
 	strcpy(str, filePath);

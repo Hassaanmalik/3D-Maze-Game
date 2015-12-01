@@ -1,6 +1,7 @@
 //opengl cross platform includes
 #include <stdio.h>
 #include <stdlib.h>
+#include <iostream>
 #include <math.h> //added math libary to code to allow for use of sin,cos and sqrt
 
 #ifdef __APPLE__
@@ -60,9 +61,6 @@ float position;
 float rotation;
 float speed;
 const double rad = 3.141592654 / 180.0;
-
-//Object moving variables
-float ghostX, ghostY, ghostZ;
 
 //used the link to help me create the maze and solve it 
 //http://algs4.cs.princeton.edu/41graph/Maze.java.html
@@ -209,53 +207,6 @@ void drawMesh(){
 	}
 }
 
-void mtlForOBJ(){
-	float *ambient = ghostLoadObj.getAmbient();
-	float *diffuse = ghostLoadObj.getDiffuse();
-	float *specular = ghostLoadObj.getReflectivity();
-
-	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, ambient);
-	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, diffuse);
-	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specular);
-	//glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shine);
-}
-
-void drawObj(){
-	mtlForOBJ();
-
-	int numberOfFaces = ghostLoadObj.getNumberOfFaces();
-
-	LoadObj::Face face, face_normal;
-	LoadObj::Vertice vertices, vertices_normal;
-	glColor4f(0.3,0.3,0.3,0); 
-	for(int i = 1; i < numberOfFaces; i++){
-		face = ghostLoadObj.getFaces(i);
-		face_normal = ghostLoadObj.getFacesNormal(i);
-
-		glBegin(GL_POLYGON);
-			vertices = ghostLoadObj.getVertices(face.p1);
-			vertices_normal = ghostLoadObj.getVerticesNormal(face_normal.p1);
-			glNormal3f(vertices_normal.x+ghostX, vertices_normal.y+ghostY, vertices_normal.z+ghostZ);
-			glVertex3f(vertices.x+ghostX, vertices.y+ghostY, vertices.z+ghostZ);
-
-			vertices = ghostLoadObj.getVertices(face.p2);
-			vertices_normal = ghostLoadObj.getVerticesNormal(face_normal.p4);
-			glNormal3f(vertices_normal.x+ghostX, vertices_normal.y+ghostY, vertices_normal.z+ghostZ);
-			glVertex3f(vertices.x+ghostX, vertices.y+ghostY, vertices.z+ghostZ);
-
-			vertices = ghostLoadObj.getVertices(face.p3);
-			vertices_normal = ghostLoadObj.getVerticesNormal(face_normal.p4);
-			glNormal3f(vertices_normal.x+ghostX, vertices_normal.y+ghostY, vertices_normal.z+ghostZ);
-			glVertex3f(vertices.x+ghostX, vertices.y+ghostY, vertices.z+ghostZ);
-
-			vertices = ghostLoadObj.getVertices(face.p4);
-			vertices_normal = ghostLoadObj.getVerticesNormal(face_normal.p4);
-			glNormal3f(vertices_normal.x+ghostX, vertices_normal.y+ghostY, vertices_normal.z+ghostZ);
-			glVertex3f(vertices.x+ghostX, vertices.y+ghostY, vertices.z+ghostZ);
-		glEnd();
-	}
-	//printf("%f %f %f\n", ghostX, ghostY, ghostZ);
-}
 
 void cleanArrays(){
 	//reset all the arrays 
@@ -281,26 +232,7 @@ void keyboard(unsigned char key, int x, int y){
 		case 'r':
 			calcMode = true;
 			cleanArrays();
-			break;
-		/*case 'w':
-			ghostY++;
-			break;
-		case 's':
-			ghostY--;
-			break;
-		case 'a':
-			ghostX++;
-			break;
-		case 'd':
-			ghostX--;
-			break;
-		case 'c':
-			ghostZ++;
-			break;
-		case 'e':
-			ghostZ--;
-			break;*/
-			
+			break;			
 	}
 	glutPostRedisplay();
 }
@@ -431,8 +363,11 @@ void display(void)
 	mazeStarter();
 	generateMaze();
 	drawMesh();
-	drawObj();
-
+	glPushMatrix();
+		//update x y z
+		ghostLoadObj.mtlForOBJ();
+		ghostLoadObj.drawObj();
+	glPopMatrix();
 	glutSwapBuffers();
 }
 void display2()

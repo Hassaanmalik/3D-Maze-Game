@@ -35,46 +35,14 @@ class LoadObj{
         };
 
         //Public function
+
         /*LoadObj loadObj(char *fileName, char *filePath);*/
         void loadObj(char *fileName, char *filePath);
-
-        /*LoadObj getNumberOfFaces();*/
-        int getNumberOfFaces();
-
-
-        //Functions to return Vertices
-        /*LoadObj getVertices(int verticeNumber);*/
-        Vertice getVertices(int verticeNumber);
-        /*LoadObj getVerticesTexture();*/
-        //Vertice getVerticesTexture();
-        /*LoadObj getVerticesNormal(int verticeNumber);*/
-        Vertice getVerticesNormal(int verticeNumber);
-
-
-        //Functions to return Faces
-        /*LoadObj getFaces(int faceNumber);*/
-        Face getFaces(int faceNumber);
-        /*LoadObj getFacesTexture();*/
-        //Face getFacesTexture();
-        /*LoadObj getFacesNormal(int faceNumber);*/
-        Face getFacesNormal(int faceNumber);
-
-
-        //Functions to return Material 
-        /*LoadObj getPhongSpecular();*/
-        //float getPhongSpecular();
-        /*LoadObj getRefraction();*/
-        //float getRefraction();
-        /*LoadObj getIllumination();*/
-        //int getIllumination();
-        /*LoadObj getAmbient();*/
-        float* getAmbient();
-        /*LoadObj getDiffuse();*/
-        float* getDiffuse();
-        /*LoadObj getReflectivity();*/
-        float* getReflectivity();
-        /*LoadObj getEmission();*/
-        float* getEmission();
+        
+        /*LoadObj mtlForOBJ();*/
+        void mtlForOBJ();
+        /*LoadObj drawObj();*/
+        void drawObj();
 
 
     private:
@@ -105,6 +73,45 @@ class LoadObj{
         
 
         //Private function
+
+        /*LoadObj getNumberOfFaces();*/
+        int getNumberOfFaces();
+
+
+        //Functions to return Vertices
+        /*LoadObj getVertices(int verticeNumber);*/
+        Vertice getVertices(int verticeNumber);
+        /*LoadObj getVerticesTexture();*/
+        //Vertice getVerticesTexture();
+        /*LoadObj getVerticesNormal(int verticeNumber);*/
+        Vertice getVerticesNormal(int verticeNumber);
+
+
+        //Functions to return Faces
+        /*LoadObj getFaces(int faceNumber);*/
+        Face getFaces(int faceNumber);
+        /*LoadObj getFacesTexture();*/
+        //Face getFacesTexture();
+        /*LoadObj getFacesNormal(int faceNumber);*/
+        Face getFacesNormal(int faceNumber);
+
+
+        //Functions to return Material 
+        /*LoadObj getPhongSpecular();*/
+        float getPhongSpecular();
+        /*LoadObj getRefraction();*/
+        //float getRefraction();
+        /*LoadObj getIllumination();*/
+        //int getIllumination();
+        /*LoadObj getAmbient();*/
+        float* getAmbient();
+        /*LoadObj getDiffuse();*/
+        float* getDiffuse();
+        /*LoadObj getReflectivity();*/
+        float* getReflectivity();
+        /*LoadObj getEmission();*/
+        float* getEmission();
+
         /*LoadObj openFile(char *filePath, char *fileType);*/
         char *openFile(char *fileType);
 
