@@ -478,7 +478,14 @@ void idle(){
 	glutSetWindow(window2);
 	glutPostRedisplay();
 }
-
+void drawObj(){
+    glPushMatrix();
+		/* glScalef(2,2,2); */
+        glRotatef(90,-1,0,0);
+		/* ghostLoadObj.mtlForOBJ(); */
+		ghostLoadObj.drawObj();
+	glPopMatrix();
+}
 void display(void)
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -496,12 +503,8 @@ void display(void)
 	mazeStarter();
 	generateMaze();
 	drawMesh();
-	glPushMatrix();
-		//update x y z
-		ghostLoadObj.mtlForOBJ();
-		ghostLoadObj.drawObj();
-	glPopMatrix();
 	drawPrize();
+    /* drawObj(); */
 //	if(checkWin()){
 
 //	}
@@ -530,8 +533,8 @@ void display2()
 	drawMesh();
 
 	checkStatus();
-	//drawObj();
 	drawPrize();
+	drawObj();
 	glutSwapBuffers();
 }
 
