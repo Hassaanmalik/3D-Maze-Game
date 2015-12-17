@@ -20,8 +20,8 @@
 LoadObj ghostLoadObj;
 
 //camera positions
-float camPos[] = {0, 0, 0};
-float camPos2[] = {10,5,1};
+float camPos[] = {100, 200, 100};
+float camPos2[] = {45,15,10};
 
 
 //setting the window height and width
@@ -29,6 +29,18 @@ const float w = 800;
 const float h = 800;
 const float wMid = w/2;
 const float hMid = h/2;
+
+// coordinates for the prize
+int px = 78;
+int py = 5;
+int pz = 78;
+
+float m_amb [] ={0.25f, 0.25f, 0.25f, 1.0f  };
+float m_dif []={0.4f, 0.4f, 0.4f, 1.0f };
+float m_spec [] ={0.774597f, 0.774597f, 0.774597f, 1.0f };
+float shiny = 76.8;
+
+GLfloat light_pos[] = {0.0,100.0,0,1.0};
 
 //maze variables
 int size;
@@ -151,57 +163,47 @@ void drawCube (int x, int z, int c, int d){
 	}
 }
 
+
+bool prize = false;
 //draws the grid
 void drawMesh(){
+
+	m_amb[0] = 0.0f;m_amb[1] = 0.0f;m_amb[2] = 0.0f;m_amb[3] = 1.0f;
+	m_dif[0] = 0.1f;m_dif[1] = 0.35f;m_dif[2] = 0.1f; m_dif[3] = 1.0f;
+	m_spec[0] = 0.45f;m_spec[1] = 0.55f;m_spec[2] =0.45f;m_spec[3] = 1.0f;
+	shiny = 32.0f;
+
 	// mulitples of four to allow for more spacing; can be adjusted by changing n
+
 	for(int x = n; x<=size*n;x+=n){
 		for(int z=n; z<=size*n;z+=n){
 			if (south[x/n][z/n]){
-				glColor4f(1,1,1,0.5);
-			/*	glBegin(GL_QUADS);
-					glVertex3f(x,10,z);
-					glVertex3f(x,0,z);
-					glVertex3f(x+4,0,z);
-					glVertex3f(x+4,10,z);
-				glEnd(); */
-				glColor4f(1,0,0,0.5);
-				drawCube(x,z,halfN,-1);
-
+				if (x==px && z==pz)break;
+				else{
+					glColor4f(1,1,1,0.5);
+					drawCube(x,z,halfN,-1);
+				}
 			}
 		 	if(north[x/n][z/n]){
-				glColor4f(1,1,1,0.5);
-		 	/*	glBegin(GL_QUADS);
-					glVertex3f(x,10,z+4);
-					glVertex3f(x,0,z+4);
-					glVertex3f(x+4,0,z+4);
-					glVertex3f(x+4,10,z+4);
-				glEnd(); */
-				glColor4f(0,1,0,0.5);
-				drawCube(x,z+n,halfN,-1);
-
+		 	//	if (x==px && z==pz)break;
+			//	else{
+					glColor4f(1,1,1,0.5);
+					drawCube(x,z+n,halfN,-1);
+			//	}
 			}
 			if (west[x/n][z/n]){
-				glColor4f(1,1,1,0.5);
-			/*	glBegin(GL_QUADS);
-					glVertex3f(x,10,z);
-					glVertex3f(x,0,z);
-					glVertex3f(x,0,z+4);
-					glVertex3f(x,10,z+4);
-				glEnd(); */
-				glColor4f(0,0,1,0.5);
-				drawCube(x,z,-1,halfN);
-
+				if (x==px && z==pz)break;
+				else{
+					glColor4f(1,1,1,0.5);
+					drawCube(x,z,-1,halfN);
+				}
 			}
-			if (east[x/n][z/n] || x == size*n){
-				glColor4f(1,1,1,0.5);
-			/*	glBegin(GL_QUADS);
-					glVertex3f(x+4,10,z);
-					glVertex3f(x+4,0,z);
-					glVertex3f(x+4,0,z+4);
-					glVertex3f(x+4,10,z+4);
-				glEnd(); */
-				glColor4f(0.76,0,1,0.5);
-				drawCube(x+n,z,-1,halfN);
+			if ((east[x/n][z/n] || x == size*n)){
+				if (x==px && z==pz)break;
+				else{
+					glColor4f(1,1,1,0.5);
+					drawCube(x+n,z,-1,halfN);
+				}
 			}
 		}
 	}
@@ -321,24 +323,154 @@ void special2(int key, int x, int y)
 	glutPostRedisplay();
 }
 
+void showWin(const char *text, int length, int x, int y){
+	glDisable(GL_LIGHTING);
+	glDisable(GL_FOG);
+	glMatrixMode(GL_PROJECTION);
+	double *matrix = new double [16];
+	glGetDoublev(GL_PROJECTION_MATRIX, matrix);
+	glLoadIdentity();
+	glOrtho(0,800,0,600,-5,5);
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+	glPushMatrix();
+	glLoadIdentity();
+	glRasterPos2i(x,y);
+	for(int i = 0; i < length; i ++){
+		glColor3f(0,1,0);
+		glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, (int)text[i]);
+	}
+	glPopMatrix();
+	glMatrixMode(GL_PROJECTION);
+	glLoadMatrixd(matrix);
+	glMatrixMode(GL_MODELVIEW);
+	glEnable(GL_LIGHTING);
+//	glEnable(GL_FOG);
 
-void init(void){
-	glClearColor(0, 0, 0, 0);
+}
+
+bool checkWin(){
+	if (camPos2[0] == px && camPos[2]==pz){
+		std::string text;
+		text = "You Won!";
+		showWin(text.data(), text.size(), 300,350);
+		return true;
+	}
+	return false;
+}
+
+bool checkLose(){
+	if (camPos2[0] == px && camPos[2]==pz){ // change to equal AI
+		std::string text;
+		text = "You Lost....";
+		showWin(text.data(), text.size(), 300,350);
+		return true;
+	}
+	return false;
+}
+
+
+// draw a tropy for the user to get to
+void drawPrize(){
+	// turn off fog for that one object
+	glDisable(GL_FOG);
+	// create a gold material
+	m_amb[0] = 0.24725f;m_amb[1] = 0.1995f;m_amb[2] = 0.0745f;m_amb[3] = 0.60648f;
+	m_dif[0] = 0.75164f;m_dif[1] = 0.60648f;m_dif[2] = 0.22648f; m_dif[3] = 1.0f;
+	m_spec[0] = 0.628281f;m_spec[1] = 0.555802f;m_spec[2] =0.366065f;m_spec[3] = 1.0f;
+	shiny = 0.4;
+
+	// move to that position in the maze
+	glTranslatef(px+4,py+3,pz+4);
+	glRotatef(90,1,0,0);
+	glutSolidCone(1,1,20,20);
+	GLUquadricObj *quadratic= gluNewQuadric();
+	gluCylinder(quadratic,0.3,0.3, 2, 40,5); 	// draw body
+	gluCylinder(quadratic,1,0.5, 1, 40,5);		// draw cup
+	glTranslatef(0,0,2); 						// move to the bottom
+	glutSolidTorus(0.1,0.4,30, 30); 			// draw base
+}
+
+void checkStatus(){
+	// if win; need to fix this code so it will exit upon a win condition (ie Trevor?)
+	if(checkWin()){
+		exit(1);
+	}
+	if(checkLose()){
+		exit(1);
+	}
+}
+
+void light(){
+	glColor3f(1, 1, 1);
+
+	//GLfloat position[] = {0.0,100.0,0,1.0};
+	float amb0[4] = {1, 1, 1, 1};
+	float diff0[4] = {1, 0, 0, 1};
+	float spec0[4] = {1, 1, 1, 1};
+
+	// set the values for the first light source
+	glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
+	glLightfv(GL_LIGHT0, GL_AMBIENT, amb0);
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, diff0);
+	glLightfv(GL_LIGHT0, GL_SPECULAR, spec0);
+
+   glEnable(GL_LIGHTING);
+   glEnable(GL_LIGHT0);
+   {
+      GLfloat mat[3] = {0.1745, 0.01175, 0.01175};
+      glMaterialfv (GL_FRONT, GL_AMBIENT, mat);
+      mat[0] = 0.61424; mat[1] = 0.04136; mat[2] = 0.04136;
+      glMaterialfv (GL_FRONT, GL_DIFFUSE, mat);
+      mat[0] = 0.727811; mat[1] = 0.626959; mat[2] = 0.626959;
+      glMaterialfv (GL_FRONT, GL_SPECULAR, mat);
+      glMaterialf (GL_FRONT, GL_SHININESS, 0.6*128.0);
+   }
+
+}
+
+void fog(){
+	glClearColor(0.3, 0.3, 0.3, 0.1);
 	glColor3f(1, 1, 1);
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	gluPerspective(45, 1, 1, 1000);
+	glMatrixMode(GL_MODELVIEW);
+	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_BLEND);
+	glEnable(GL_FOG);
+	{
+	GLfloat fogColor[] = {0.4f, 0.4f, 0.4f, 0.1};
+    glFogfv(GL_FOG_COLOR, fogColor);
+    glFogfv(GL_FOG_COLOR, fogColor);
+    glFogi(GL_FOG_MODE, GL_EXP);
+    glFogf(GL_FOG_START, 45.0f);
+    glFogf(GL_FOG_END, 1000.0f);
+    glFogf (GL_FOG_DENSITY, 0.05);
+    glHint(GL_FOG_HINT,GL_FASTEST);
+	}
+}
+
+void init(void){
+//	glClearColor(0.3, 0.3, 0.3, 0.1);
+	glColor3f(1, 1, 1);
+
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	gluPerspective(45, 1, 1, 1000);
+//	light();
+
 
 }
 void init2(void){
-	glClearColor(0, 0, 0, 0);
+	glClearColor(0.3, 0.3, 0.3, 0.1);
 	glColor3f(1, 1, 1);
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	gluPerspective(45, 1, 1, 1000);
-
+	light();
 }
 void idle(){
 	glutSetWindow(window1);
@@ -347,15 +479,16 @@ void idle(){
 	glutPostRedisplay();
 }
 
-
 void display(void)
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+//	glClearColor(0.3, 0.3, 0.3, 0.1);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
-	gluLookAt(camPos[0], camPos[1], camPos[2], 0,0,0, 0,1,0);
+    gluLookAt(camPos[0], camPos[1], camPos[2], 0,0,0, 0,1,0);
 	glColor3f(1,1,1);
+  //  fog();
 
 	//code for drawing the maze
 	size = 20;
@@ -368,6 +501,10 @@ void display(void)
 		ghostLoadObj.mtlForOBJ();
 		ghostLoadObj.drawObj();
 	glPopMatrix();
+	drawPrize();
+//	if(checkWin()){
+
+//	}
 	glutSwapBuffers();
 }
 void display2()
@@ -376,6 +513,13 @@ void display2()
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
+	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, m_amb);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, m_dif);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, m_spec);
+	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shiny);
+	glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
+
+	fog();
 	gluLookAt(camPos2[0], camPos2[1], camPos2[2], 0,0,0, 0,1,0);
 	glColor3f(1,1,1);
 
@@ -384,8 +528,10 @@ void display2()
 	mazeStarter();
 	generateMaze();
 	drawMesh();
-	//drawObj();
 
+	checkStatus();
+	//drawObj();
+	drawPrize();
 	glutSwapBuffers();
 }
 
@@ -417,7 +563,7 @@ int main(int argc, char** argv)
 	ghostLoadObj.loadObj("ghost", "ObjFile/");
 
 	glutInitWindowSize(w, h);
-	glutInitWindowPosition(100, 100);
+	glutInitWindowPosition(50, 50);
 	window1 = glutCreateWindow("Maze Top View");	//creates the window
 	glutCallBacks();
 	init();
