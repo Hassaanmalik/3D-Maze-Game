@@ -62,11 +62,11 @@ float rotation;
 float speed;
 const double rad = 3.141592654 / 180.0;
 
-//used the link to help me create the maze and solve it 
+//used the link to help me create the maze and solve it
 //http://algs4.cs.princeton.edu/41graph/Maze.java.html
 void mazeStarter(){
 	if(calcMode==true){
-		//this first 2 loops set the borders as already visited 
+		//this first 2 loops set the borders as already visited
 		//so that the algorithm doesnt touch these
 		for(int x = 0; x< size+2; x++){
 			visited[x][0] = true;
@@ -77,7 +77,7 @@ void mazeStarter(){
 			visited[size+1][z] = true;
 		}
 
-		//initialize all the walls 
+		//initialize all the walls
 		for(int x=0; x< size+2;x++){
 			for (int z=0; z<size+2;z++){
 				north[x][z] = true;
@@ -138,10 +138,10 @@ void drawCube (int x, int z, int c, int d){
 	int verts [8][3] = {{x,0,z},{x,10,z},{x+halfN+c,10,z},{x+halfN+c,0,z},{x,0,z+halfN+d},{x,10,z+halfN+d},{x+halfN+c,10,z+halfN+d},{x+halfN+c,0,z+halfN+d}};
 	// for each face
 	for (int index = 0; index < 6; index ++){
-		glBegin(GL_POLYGON);	
+		glBegin(GL_POLYGON);
 			// for each four corners of a face
-			for(int i = 0; i < 4; i++){		
-				int vIndex = indices[index][i]; 
+			for(int i = 0; i < 4; i++){
+				int vIndex = indices[index][i];
 				int x = verts[vIndex][0];
 				int y = verts[vIndex][1];
 				int z = verts[vIndex][2];
@@ -164,9 +164,9 @@ void drawMesh(){
 					glVertex3f(x+4,0,z);
 					glVertex3f(x+4,10,z);
 				glEnd(); */
-				glColor4f(1,0,0,0.5); 
+				glColor4f(1,0,0,0.5);
 				drawCube(x,z,halfN,-1);
-	
+
 			}
 		 	if(north[x/n][z/n]){
 				glColor4f(1,1,1,0.5);
@@ -176,7 +176,7 @@ void drawMesh(){
 					glVertex3f(x+4,0,z+4);
 					glVertex3f(x+4,10,z+4);
 				glEnd(); */
-				glColor4f(0,1,0,0.5);	
+				glColor4f(0,1,0,0.5);
 				drawCube(x,z+n,halfN,-1);
 
 			}
@@ -188,9 +188,9 @@ void drawMesh(){
 					glVertex3f(x,0,z+4);
 					glVertex3f(x,10,z+4);
 				glEnd(); */
-				glColor4f(0,0,1,0.5); 
+				glColor4f(0,0,1,0.5);
 				drawCube(x,z,-1,halfN);
-	
+
 			}
 			if (east[x/n][z/n] || x == size*n){
 				glColor4f(1,1,1,0.5);
@@ -200,7 +200,7 @@ void drawMesh(){
 					glVertex3f(x+4,0,z+4);
 					glVertex3f(x+4,10,z+4);
 				glEnd(); */
-				glColor4f(0.76,0,1,0.5); 
+				glColor4f(0.76,0,1,0.5);
 				drawCube(x+n,z,-1,halfN);
 			}
 		}
@@ -209,7 +209,7 @@ void drawMesh(){
 
 
 void cleanArrays(){
-	//reset all the arrays 
+	//reset all the arrays
 	for(int x=0; x< size+2;x++){
 		for (int z=0; z<size+2;z++){
 			north[x][z] = false;
@@ -232,7 +232,7 @@ void keyboard(unsigned char key, int x, int y){
 		case 'r':
 			calcMode = true;
 			cleanArrays();
-			break;			
+			break;
 	}
 	glutPostRedisplay();
 }
@@ -263,7 +263,7 @@ void special(int key, int x, int y)
 				camPos[2] += 2;
 			}
 			break;
-		
+
 		case GLUT_KEY_HOME:
 			camPos[1] += 50;
 			break;
@@ -306,7 +306,7 @@ void special2(int key, int x, int y)
 				camPos2[2] += 1;
 			//}
 			break;
-		
+
 		case GLUT_KEY_HOME:
 			camPos2[1] += 1;
 			break;
@@ -411,7 +411,7 @@ void glutCallBacks2(){
 int main(int argc, char** argv)
 {
 	glutInit(&argc, argv);		//starts up GLUT
-	
+
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
 
 	ghostLoadObj.loadObj("ghost", "ObjFile/");
