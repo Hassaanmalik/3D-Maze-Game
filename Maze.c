@@ -142,7 +142,7 @@ GLubyte* LoadPPM(char* file, int* width, int* height, int* max)
 }
 
 void texture(){
-	tex1 = LoadPPM("marble.ppm", &width, &height, &max);
+	tex1 = LoadPPM("rockypath.ppm", &width, &height, &max);
 	glBindTexture(GL_TEXTURE_2D, textures[0]); //Stores the texture at the array location 0
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); //Sets up needed texture properites
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT ); 
@@ -150,7 +150,7 @@ void texture(){
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, tex1); //Instantiates the texture
 
-	tex2 = LoadPPM("snail_a.ppm", &width, &height, &max);
+	tex2 = LoadPPM("wood256.ppm", &width, &height, &max);
 	glBindTexture(GL_TEXTURE_2D, textures[1]); //Stores the texture at the array location 1
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); //Sets up needed texture properties
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT ); 
@@ -513,10 +513,10 @@ void light(){
    glEnable(GL_LIGHTING);
    glEnable(GL_LIGHT0);
 
-	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, m_amb); 
+	/*glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, m_amb); 
 	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, m_diff); 
 	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, m_spec); 
-	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shiny);
+	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shiny);*/
 
 }
 
