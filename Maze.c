@@ -68,6 +68,13 @@ float rotation;
 float speed;
 const double rad = 3.141592654 / 180.0;
 
+//materials 
+
+float m_amb[] ={ 0.05375f, 0.05f, 0.06625f, 0.82f };
+float m_diff[] ={ 0.18275f, 0.17f, 0.22525f, 0.82f};
+float m_spec[] ={0.332741f, 0.328634f, 0.346435f, 0.82f };
+float shiny =38.4f ;
+
 //an array for iamge data
 GLubyte* tex1;
 GLubyte* tex2;
@@ -467,7 +474,6 @@ bool checkLose(){
 void drawPrize(){
 	// turn off fog for that one object
 	glDisable(GL_FOG);
-	// create a gold material
 
 	// move to that position in the maze
 	glTranslatef(px+4,py+3,pz+4);
@@ -506,6 +512,11 @@ void light(){
 
    glEnable(GL_LIGHTING);
    glEnable(GL_LIGHT0);
+
+	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, m_amb); 
+	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, m_diff); 
+	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, m_spec); 
+	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shiny);
 
 }
 
@@ -596,6 +607,7 @@ void display2()
 	glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
 
 	//fog();
+	light();
 	gluLookAt(camPos2[0], camPos2[1], camPos2[2], 0,0,0, 0,1,0);
 	glColor3f(1,1,1);
 
