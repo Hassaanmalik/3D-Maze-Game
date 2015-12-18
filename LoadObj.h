@@ -38,8 +38,9 @@ class LoadObj{
 
         /*LoadObj loadObj(char *fileName, char *filePath);*/
         void loadObj(char *fileName, char *filePath);
-        /*LoadObj mtlForOBJ();*/
-        void mtlForOBJ();
+
+        /*LoadObj mtlForObj();*/
+        void mtlForObj();
         /*LoadObj drawObj();*/
         void drawObj();
 

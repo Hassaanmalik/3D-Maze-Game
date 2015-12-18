@@ -510,13 +510,18 @@ void light(){
 	glLightfv(GL_LIGHT0, GL_DIFFUSE, diff0);
 	glLightfv(GL_LIGHT0, GL_SPECULAR, spec0);
 
-   glEnable(GL_LIGHTING);
-   glEnable(GL_LIGHT0);
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
 
-	/*glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, m_amb);
-	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, m_diff);
-	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, m_spec);
-	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shiny);*/
+    /* m_amb = ghostLoadObj.getAmbient(); */
+    /* m_diff = ghostLoadObj.getDiffuse(); */
+    /* m_spec = ghostLoadObj.getReflectivity(); */
+    /* shiny = ghostLoadObj.getPhongSpecular(); */
+
+	/* glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, m_amb); */
+	/* glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, m_diff); */
+	/* glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, m_spec); */
+	/* glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shiny); */
 
 }
 
@@ -571,9 +576,14 @@ void idle(){
 }
 void drawObj(){
     glPushMatrix();
-		/* glScalef(2,2,2); */
+
+        glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, m_amb);
+	    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, m_diff);
+	    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, m_spec);
+	    glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shiny);
+
         glRotatef(90, -1, 0, 0);
-		ghostLoadObj.mtlForOBJ();
+		/* ghostLoadObj.mtlForObj(); */
 		ghostLoadObj.drawObj();
 	glPopMatrix();
 }
@@ -595,7 +605,7 @@ void display(void)
 	generateMaze();
 	drawMesh();
 	drawPrize();
-    /* drawObj(); */
+    drawObj();
     /* if(checkWin()){ */
     /* } */
 	glutSwapBuffers();

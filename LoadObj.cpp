@@ -36,8 +36,8 @@ void LoadObj::loadObj(char *fileName, char *filePath){
 	setObjVariables();
 }
 
-/*LoadObj mtlForOBJ();*/
-void LoadObj::mtlForOBJ(){
+/*LoadObj mtlForObj();*/
+void LoadObj::mtlForObj(){
 	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, getAmbient());
 	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, getDiffuse());
 	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, getReflectivity());
@@ -115,25 +115,25 @@ float LoadObj::getPhongSpecular(){
 /*LoadObj getAmbient();*/
 float* LoadObj::getAmbient(){
 	float localAmbient[4] = {ambient.r, ambient.g, ambient.b, dissolve};
-    printf("ambient: %f, %f, %f, %f", localAmbient[0], localAmbient[1], localAmbient[2], localAmbient[3]);
+    printf("ambient: %f, %f, %f, %f\n", localAmbient[0], localAmbient[1], localAmbient[2], localAmbient[3]);
 	return localAmbient;
 }
 /*LoadObj getDiffuse();*/
 float* LoadObj::getDiffuse(){
 	float localDiffuse[4] = {diffuse.r, diffuse.g, diffuse.b, dissolve};
-    printf("diffuse: %f, %f, %f, %f", localDiffuse[0], localDiffuse[1], localDiffuse[2], localDiffuse[3]);
+    printf("diffuse: %f, %f, %f, %f\n", localDiffuse[0], localDiffuse[1], localDiffuse[2], localDiffuse[3]);
 	return localDiffuse;
 }
 /*LoadObj getReflectivity();*/
 float* LoadObj::getReflectivity(){
 	float localReflectivity[4] = {specularReflectivity.r, specularReflectivity.g, specularReflectivity.b, dissolve};
-    printf("reflectivity: %f, %f, %f, %f", localReflectivity[0], localReflectivity[1], localReflectivity[2], localReflectivity[3]);
+    printf("reflectivity: %f, %f, %f, %f\n", localReflectivity[0], localReflectivity[1], localReflectivity[2], localReflectivity[3]);
 	return localReflectivity;
 }
 /*LoadObj getEmission();*/
 float* LoadObj::getEmission(){
 	float localEmission[4] = {emission.r, emission.g, emission.b, dissolve};
-    printf("emission: %f, %f, %f, %f", localEmission[0], localEmission[1], localEmission[2], localEmission[3]);
+    /* printf("emission: %f, %f, %f, %f\n", localEmission[0], localEmission[1], localEmission[2], localEmission[3]); */
 	return localEmission;
 }
 
