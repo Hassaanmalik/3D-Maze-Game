@@ -6,7 +6,7 @@
 
 class LoadObj{
 
-    
+
 
     public:
         //Constructors
@@ -38,9 +38,9 @@ class LoadObj{
 
         /*LoadObj loadObj(char *fileName, char *filePath);*/
         void loadObj(char *fileName, char *filePath);
-        
-        /*LoadObj mtlForOBJ();*/
-        void mtlForOBJ();
+
+        /*LoadObj mtlForObj();*/
+        void mtlForObj();
         /*LoadObj drawObj();*/
         void drawObj();
 
@@ -51,7 +51,7 @@ class LoadObj{
 
         //**** Change all the following to arrays if loading multiple objects and material from one file ****/
         int numberOfFace;
-        
+
         //Variables for Object Vertices
         std::vector<Vertice>vertices;
         std::vector<Vertice>vertices_texture;
@@ -70,7 +70,7 @@ class LoadObj{
         Color specularReflectivity;
         Color emission;
         //**** Change all the above to arrays if loading multiple objects and material from one file ****/
-        
+
 
         //Private function
 
@@ -96,7 +96,7 @@ class LoadObj{
         Face getFacesNormal(int faceNumber);
 
 
-        //Functions to return Material 
+        //Functions to return Material
         /*LoadObj getPhongSpecular();*/
         float getPhongSpecular();
         /*LoadObj getRefraction();*/

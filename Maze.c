@@ -68,7 +68,7 @@ float rotation;
 float speed;
 const double rad = 3.141592654 / 180.0;
 
-//materials 
+//materials
 
 float m_amb[] ={ 0.05375f, 0.05f, 0.06625f, 0.82f };
 float m_diff[] ={ 0.18275f, 0.17f, 0.22525f, 0.82f};
@@ -84,7 +84,7 @@ GLuint textures[3];
 
 int width, height, max;
 
-//used the link to help me create the maze and solve it 
+//used the link to help me create the maze and solve it
 //http://algs4.cs.princeton.edu/41graph/Maze.java.html
 
 GLubyte* LoadPPM(char* file, int* width, int* height, int* max)
@@ -98,23 +98,23 @@ GLubyte* LoadPPM(char* file, int* width, int* height, int* max)
 	char b[100];
 	float s;
 	int red, green, blue;
-	
+
 	fd = fopen(file, "r");
 	fscanf(fd,"%[^\n] ",b);
 	if(b[0]!='P'|| b[1] != '3')
 	{
-		printf("%s is not a PPM file!\n",file); 
+		printf("%s is not a PPM file!\n",file);
 		exit(0);
 	}
 	printf("%s is a PPM file\n", file);
 	fscanf(fd, "%c",&c);
-	while(c == '#') 
+	while(c == '#')
 	{
 		fscanf(fd, "%[^\n] ", b);
 		printf("%s\n",b);
 		fscanf(fd, "%c",&c);
 	}
-	ungetc(c,fd); 
+	ungetc(c,fd);
 	fscanf(fd, "%d %d %d", &n, &m, &k);
 
 	printf("%d rows  %d columns  max value= %d\n",n,m,k);
@@ -126,7 +126,7 @@ GLubyte* LoadPPM(char* file, int* width, int* height, int* max)
 	s=255.0/k;
 
 
-	for(i=0;i<nm;i++) 
+	for(i=0;i<nm;i++)
 	{
 		fscanf(fd,"%d %d %d",&red, &green, &blue );
 		img[3*nm-3*i-3]=red*s;
@@ -145,31 +145,31 @@ void texture(){
 	tex1 = LoadPPM("rockypath.ppm", &width, &height, &max);
 	glBindTexture(GL_TEXTURE_2D, textures[0]); //Stores the texture at the array location 0
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); //Sets up needed texture properites
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT ); 
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); 
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, tex1); //Instantiates the texture
 
 	tex2 = LoadPPM("wood256.ppm", &width, &height, &max);
 	glBindTexture(GL_TEXTURE_2D, textures[1]); //Stores the texture at the array location 1
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); //Sets up needed texture properties
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT ); 
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); 
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, tex2); //Instantiates the texture
 
 	tex3 = LoadPPM("interface.ppm", &width, &height, &max);
 	glBindTexture(GL_TEXTURE_2D, textures[2]); //Stores the texture at the array location 2
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); //Sets up needed texture properties
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT ); 
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); 
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, tex3); //Instantiates the texture
 }
 
 void mazeStarter(){
 	if(calcMode==true){
-		//this first 2 loops set the borders as already visited 
+		//this first 2 loops set the borders as already visited
 		//so that the algorithm doesnt touch these
 		for(int x = 0; x< size+2; x++){
 			visited[x][0] = true;
@@ -180,7 +180,7 @@ void mazeStarter(){
 			visited[size+1][z] = true;
 		}
 
-		//initialize all the walls 
+		//initialize all the walls
 		for(int x=0; x< size+2;x++){
 			for (int z=0; z<size+2;z++){
 				north[x][z] = true;
@@ -243,21 +243,21 @@ void drawCube (int x, int z, int c, int d){
 	int vIndex;
 	for (int index = 0; index < 6; index ++){
 		glBindTexture(GL_TEXTURE_2D, textures[0]);
-		glBegin(GL_POLYGON);	
+		glBegin(GL_POLYGON);
 			// for each four corners of a face
-		//	for(int i = 0; i < 4; i++){		
+		//	for(int i = 0; i < 4; i++){
 				vIndex = indices[index][0];
 				glTexCoord2f(0,1);
-				glVertex3f(verts[vIndex][0],verts[vIndex][1], verts[vIndex][2]);	
-				
+				glVertex3f(verts[vIndex][0],verts[vIndex][1], verts[vIndex][2]);
+
 				vIndex = indices[index][1];
 				glTexCoord2f(0,0);
-				glVertex3f(verts[vIndex][0],verts[vIndex][1], verts[vIndex][2]);					
-				
+				glVertex3f(verts[vIndex][0],verts[vIndex][1], verts[vIndex][2]);
+
 				vIndex = indices[index][2];
 				glTexCoord2f(1,0);
-				glVertex3f(verts[vIndex][0],verts[vIndex][1], verts[vIndex][2]);					
-				
+				glVertex3f(verts[vIndex][0],verts[vIndex][1], verts[vIndex][2]);
+
 				vIndex = indices[index][3];
 				glTexCoord2f(1,1);
 				glVertex3f(verts[vIndex][0],verts[vIndex][1], verts[vIndex][2]);
@@ -274,9 +274,9 @@ void drawMesh(){
 	// mulitples of four to allow for more spacing; can be adjusted by changing n
 	for(int x = n; x<=size*n;x+=n){
 		for(int z=n; z<=size*n;z+=n){
-			if (south[x/n][z/n]){ 
+			if (south[x/n][z/n]){
 				drawCube(x,z,halfN,-1);
-	
+
 			}
 		 	if(north[x/n][z/n]){
 				drawCube(x,z+n,halfN,-1);
@@ -293,7 +293,7 @@ void drawMesh(){
 
 
 void cleanArrays(){
-	//reset all the arrays 
+	//reset all the arrays
 	for(int x=0; x< size+2;x++){
 		for (int z=0; z<size+2;z++){
 			north[x][z] = false;
@@ -308,7 +308,7 @@ void cleanArrays(){
 void drawFloor(){
 	glBindTexture(GL_TEXTURE_2D, textures[1]);
 	glBegin(GL_POLYGON);
-		
+
 		glTexCoord2f(0,1);
 		glVertex3f(n,0,n);
 
@@ -334,7 +334,7 @@ void keyboard(unsigned char key, int x, int y){
 		case 'r':
 			calcMode = true;
 			cleanArrays();
-			break;			
+			break;
 	}
 	glutPostRedisplay();
 }
@@ -365,7 +365,7 @@ void special(int key, int x, int y)
 				camPos[2] += 2;
 			}
 			break;
-		
+
 		case GLUT_KEY_HOME:
 			camPos[1] += 50;
 			break;
@@ -408,7 +408,7 @@ void special2(int key, int x, int y)
 				camPos2[2] += 1;
 			//}
 			break;
-		
+
 		case GLUT_KEY_HOME:
 			camPos2[1] += 1;
 			break;
@@ -423,7 +423,7 @@ void special2(int key, int x, int y)
 	glutPostRedisplay();
 }
 
-void showWin(const char *text, int length, int x, int y){	
+void showWin(const char *text, int length, int x, int y){
 	glDisable(GL_LIGHTING);
 	glDisable(GL_FOG);
 	glMatrixMode(GL_PROJECTION);
@@ -443,7 +443,7 @@ void showWin(const char *text, int length, int x, int y){
 	glPopMatrix();
 	glMatrixMode(GL_PROJECTION);
 	glLoadMatrixd(matrix);
-	glMatrixMode(GL_MODELVIEW);	
+	glMatrixMode(GL_MODELVIEW);
 	glEnable(GL_LIGHTING);
 //	glEnable(GL_FOG);
 
@@ -510,13 +510,18 @@ void light(){
 	glLightfv(GL_LIGHT0, GL_DIFFUSE, diff0);
 	glLightfv(GL_LIGHT0, GL_SPECULAR, spec0);
 
-   glEnable(GL_LIGHTING);
-   glEnable(GL_LIGHT0);
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
 
-	/*glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, m_amb); 
-	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, m_diff); 
-	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, m_spec); 
-	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shiny);*/
+    /* m_amb = ghostLoadObj.getAmbient(); */
+    /* m_diff = ghostLoadObj.getDiffuse(); */
+    /* m_spec = ghostLoadObj.getReflectivity(); */
+    /* shiny = ghostLoadObj.getPhongSpecular(); */
+
+	/* glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, m_amb); */
+	/* glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, m_diff); */
+	/* glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, m_spec); */
+	/* glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shiny); */
 
 }
 
@@ -560,7 +565,7 @@ void init2(void){
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	gluPerspective(45, 1, 1, 1000); 
+	gluPerspective(45, 1, 1, 1000);
 	//light();
 }
 void idle(){
@@ -569,33 +574,46 @@ void idle(){
 	glutSetWindow(window2);
 	glutPostRedisplay();
 }
+void drawObj(){
+    glPushMatrix();
 
+        /* glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, m_amb); */
+	    /* glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, m_diff); */
+	    /* glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, m_spec); */
+	    /* glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shiny); */
+
+        /* StdDraw.filledCircle(N/2.0 + 0.5, N/2.0 + 0.5, 0.375); */
+        //object's stating location and rotation
+        glRotatef(90, -1, 0, 0);
+        glTranslatef(size/2.0 + 6, 0, size/2.0 + 6);
+
+        //Object's AI
+
+		/* ghostLoadObj.mtlForObj(); */
+		ghostLoadObj.drawObj();
+	glPopMatrix();
+}
 void display(void)
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-//	glClearColor(0.3, 0.3, 0.3, 0.1);
+    /* glClearColor(0.3, 0.3, 0.3, 0.1); */
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
     gluLookAt(camPos[0], camPos[1], camPos[2], 0,0,0, 0,1,0);
 	glColor3f(1,1,1);
-  //  fog();
+    /* fog(); */
 
 	//code for drawing the maze
 	size = 20;
-	//generateWalls();
+	/* generateWalls(); */
 	mazeStarter();
 	generateMaze();
 	drawMesh();
-	glPushMatrix();
-		//update x y z
-		ghostLoadObj.mtlForOBJ();
-		ghostLoadObj.drawObj();
-	glPopMatrix();
 	drawPrize();
-//	if(checkWin()){
-
-//	}
+    /* drawObj(); */
+    /* if(checkWin()){ */
+    /* } */
 	glutSwapBuffers();
 }
 void display2()
@@ -619,8 +637,8 @@ void display2()
 	drawFloor();
 
 	checkStatus();
-	//drawObj();
 	drawPrize();
+	drawObj();
 	glutSwapBuffers();
 }
 
@@ -646,7 +664,7 @@ void glutCallBacks2(){
 int main(int argc, char** argv)
 {
 	glutInit(&argc, argv);		//starts up GLUT
-	
+
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
 
 	ghostLoadObj.loadObj("ghost", "ObjFile/");
