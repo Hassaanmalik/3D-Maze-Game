@@ -577,12 +577,18 @@ void idle(){
 void drawObj(){
     glPushMatrix();
 
-        glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, m_amb);
-	    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, m_diff);
-	    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, m_spec);
-	    glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shiny);
+        /* glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, m_amb); */
+	    /* glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, m_diff); */
+	    /* glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, m_spec); */
+	    /* glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shiny); */
 
+        /* StdDraw.filledCircle(N/2.0 + 0.5, N/2.0 + 0.5, 0.375); */
+        //object's stating location and rotation
         glRotatef(90, -1, 0, 0);
+        glTranslatef(size/2.0 + 6, 0, size/2.0 + 6);
+
+        //Object's AI
+
 		/* ghostLoadObj.mtlForObj(); */
 		ghostLoadObj.drawObj();
 	glPopMatrix();
@@ -605,7 +611,7 @@ void display(void)
 	generateMaze();
 	drawMesh();
 	drawPrize();
-    drawObj();
+    /* drawObj(); */
     /* if(checkWin()){ */
     /* } */
 	glutSwapBuffers();
