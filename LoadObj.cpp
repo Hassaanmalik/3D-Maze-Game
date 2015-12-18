@@ -1,7 +1,7 @@
 //opengl cross platform includes
 #include <stdio.h>
 #include <stdlib.h>
-
+#include <string.h>
 #include <vector>
 
 #ifdef __APPLE__
@@ -50,7 +50,7 @@ void LoadObj::drawObj(){
 
 	Face face, face_normal;
 	Vertice vertices, vertices_normal;
-	//glColor4f(0.3,0.3,0.3,0); 
+	//glColor4f(0.3,0.3,0.3,0);
 	for(int i = 1; i < numberOfFaces; i++){
 		face = getFaces(i);
 		face_normal = getFacesNormal(i);
@@ -158,29 +158,29 @@ void LoadObj::setObjVariables(){
 				}else if(strcmp(lineHeader, "mtllib") == 0){
 					setObjMaterial();
 				}/*else if(strcmp(lineHeader, "o") == 0){
-					//To Use multiple materials from one file 
+					//To Use multiple materials from one file
 						//I need to make all the variables into array
 				}*/else if(strcmp(lineHeader, "v") == 0){//Sets the vertices for the faces
 					Vertice temp_vertice;
-					fscanf(objfile, "%f %f %f\n", 
+					fscanf(objfile, "%f %f %f\n",
 							&temp_vertice.x, &temp_vertice.y, &temp_vertice.z);
 
 					vertices.push_back(temp_vertice);
 				}else if(strcmp(lineHeader, "vn") == 0){//Sets the vertices for face normals
 					Vertice temp_vertice_normal;
-					fscanf(objfile, "%f %f %f\n", 
+					fscanf(objfile, "%f %f %f\n",
 							&temp_vertice_normal.x, &temp_vertice_normal.y, &temp_vertice_normal.z);
 
 					vertices_normal.push_back(temp_vertice_normal);
 				}else if(strcmp(lineHeader, "vt") == 0){//Sets the vertices for face textures
 					Vertice temp_vertice_texture;
-					fscanf(objfile, "%f %f %f\n", 
+					fscanf(objfile, "%f %f %f\n",
 							&temp_vertice_texture.x, &temp_vertice_texture.y);
 
 					vertices_texture.push_back(temp_vertice_texture);
 				}else if(strcmp(lineHeader, "f") == 0){//Sets the face, face textures and face normals
 					Face temp_face, temp_face_texture, temp_face_normal;
-					fscanf(objfile, "%i/%i/%i %i/%i/%i %i/%i/%i %i/%i/%i\n", 
+					fscanf(objfile, "%i/%i/%i %i/%i/%i %i/%i/%i %i/%i/%i\n",
 							&temp_face.p1, &temp_face_texture.p1, &temp_face_normal.p1,
 							&temp_face.p2, &temp_face_texture.p2, &temp_face_normal.p2,
 							&temp_face.p3, &temp_face_texture.p3, &temp_face_normal.p3,
@@ -216,7 +216,7 @@ void LoadObj::setObjMaterial(){
 
 				if(strcmp(lineHeader, "#") == 0){
 				}/*else if(strcmp(lineHeader, "newmtl") == 0){
-					//To Use multiple materials from one file 
+					//To Use multiple materials from one file
 						//I need to make all the variables into array
 				}*/else if(strcmp(lineHeader, "Ns") == 0){//Sets the phong BRDF exponent for the reflective component, value between 1 and 1000 is required.
 					fscanf(mtlfile, "%f\n", &phongSpecular);
