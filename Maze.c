@@ -20,8 +20,9 @@
 LoadObj ghostLoadObj;
 
 //camera positions
+
 float camPos[] = {100, 200, 100};
-float camPos2[] = {45,15,10};
+
 
 
 //setting the window height and width
@@ -35,15 +36,25 @@ int px = 78;
 int py = 5;
 int pz = 78;
 
+
+
 GLfloat light_pos[] = {0.0,100.0,0,1.0};
 
 //maze variables
-int size;
+int size = 20; //change size variable to global
 bool north[22][22];
 bool south[22][22];
 bool east[22][22];
 bool west[22][22];
 bool visited[22][22];
+
+float playerX = size/2.0 * 6;
+float playerY = 2;
+float playerZ = size/2.0 * 6;
+float camPos2[] = {playerX,playerY,playerZ};
+
+int oldMouseX;
+int oldMouseY;
 
 //bool on off's
 bool calcMode = true;
@@ -66,6 +77,9 @@ float yawSensitivity;
 float position;
 float rotation;
 float speed;
+float viewX=0;
+float viewY=0;
+float viewZ=0;
 const double rad = 3.141592654 / 180.0;
 
 //materials
@@ -593,6 +607,73 @@ void drawObj(){
 		ghostLoadObj.drawObj();
 	glPopMatrix();
 }
+void motion(int mouseX, int mouseY){
+
+
+}
+void passive(int mouseX, int mouseY){
+			//SetCursorPos(0,0);
+			int mid_x = w/2;
+			int mid_y = h/2	;
+			float angleX =0.0f;
+			float angleY=0.0f;
+ 
+			if ((mid_x - mouseX) > 0){		// mouse moved to the right
+				angleX -= 0.1f;
+			}
+			else if ((mid_x - mouseX) < 0){	// mouse moved to the left
+				angleX += 0.1f;
+			}
+			if ((mid_y - mouseY) > 0){		// mouse moved to the right
+				angleY += 0.1f;
+			}
+			else if ((mid_y - mouseY) < 0){	// mouse moved to the left
+				angleY -= 0.1f;
+			}
+			viewY += angleY * 2;
+			viewX += angleX * 2;
+	printf("passive: %i,%i\n", mouseX, mouseY);
+
+}
+void mouse(int btn, int state, int mouseX, int mouseY){
+		//case WM_MOUSEMOVE:
+			// save old mouse coordinates
+			//oldMouseX = mouseX;
+			//oldMouseY = mouseY;
+ 
+			// get mouse coordinates from Windows
+			//mouseX = LOWORD(lParam);
+			//mouseY = HIWORD(lParam);
+ 
+			// these lines limit the camera's range
+			//if (mouseY < 60)
+			//	mouseY = 60;
+			//if (mouseY > 450)
+			//	mouseY = 450;
+/*			float angleX =0.0f;
+			float angleY=0.0f;
+ 
+			if ((mouseX - oldMouseX) > 0){		// mouse moved to the right
+				angleX += 3.0f;
+			}
+			else if ((mouseX - oldMouseX) < 0){	// mouse moved to the left
+				angleX -= 3.0f;
+			}
+			if ((mouseY - oldMouseY) > 0){		// mouse moved to the right
+				angleY += 3.0f;
+			}
+			else if ((mouseY - oldMouseY) < 0){	// mouse moved to the left
+				angleY -= 3.0f;
+			}
+			viewY += angleY * 2;
+			viewX =+ angleX * 2;*/
+
+			//return 0;
+			//break;
+
+
+}
+
 void display(void)
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -605,7 +686,7 @@ void display(void)
     /* fog(); */
 
 	//code for drawing the maze
-	size = 20;
+	//size = 20;
 	/* generateWalls(); */
 	mazeStarter();
 	generateMaze();
@@ -618,6 +699,8 @@ void display(void)
 }
 void display2()
 {
+
+	//size/2.0 + 6, 0, size/2.0 + 6
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
@@ -626,8 +709,9 @@ void display2()
 
 	//fog();
 	light();
-	gluLookAt(camPos2[0], camPos2[1], camPos2[2], 0,0,0, 0,1,0);
+	gluLookAt(camPos2[0], camPos2[1], camPos2[2], viewX,viewY,0, 0,1,0);
 	glColor3f(1,1,1);
+
 
 	//code for drawing the maze
 	size = 20;
@@ -654,6 +738,9 @@ void glutCallBacks(){
 void glutCallBacks2(){
 	glutDisplayFunc(display2);	//registers "display" as the display callback function
 	glutSpecialFunc(special2);
+	glutMouseFunc(mouse);
+	glutMotionFunc(motion);
+	glutPassiveMotionFunc(passive);
 	//glutKeyboardFunc(keyboard);
 	//glutSpecialFunc(special);
 	//initMenu();
