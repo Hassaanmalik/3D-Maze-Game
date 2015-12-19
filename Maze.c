@@ -60,6 +60,15 @@ float playerY = 2;
 float playerZ = size/2.0 * 6 + 0.5;
 float camPos2[] = {playerX,playerY,playerZ};
 //float camPos2[] = {0,0,0};
+
+//Ghost cordinates
+float ghostX[3] = {0,0,0}, ghostY[3] = {0,0,0}, ghostZ[3] = {0,0,0};
+int ghostAngle[3] = {0,0,0};
+
+//Ghost's eye loaction
+char *ghosteye[3] = {"north","north","north"};
+
+
 int oldMouseX;
 int oldMouseY;
 
@@ -723,23 +732,63 @@ void idle(){
     glutSetWindow(window2);
     glutPostRedisplay();
 }
+
+void ghostAI(int ghost){
+    //Check wall colision
+    if(ghosteye[ghost] == "north")//90
+        ghostX[ghost]+=0.01;
+    else if(ghosteye[ghost] == "south")//270
+        ghostX[ghost]-=0.01;
+    else if(ghosteye[ghost] == "east")//0
+        ghostZ[ghost]+=0.01;
+    else if(ghosteye[ghost] == "west")//180
+        ghostZ[ghost]-=0.01;
+
+    if(hitTest(ghostX[ghost], ghostZ[ghost])){
+        if(ghost == 1){
+            ghostAngle[ghost] ++;
+        }else if(ghost == 2){
+            ghostAngle[ghost] --;
+        }else if(ghost == 3){
+            //Follow player
+        }
+    }
+
+    if(ghostAngle[ghost]%4 == 1)
+        ghosteye[ghost] = "north";
+    else if(ghostAngle[ghost]%4 == 3)
+        ghosteye[ghost] = "south";
+    else if(ghostAngle[ghost]%4 == 0)
+        ghosteye[ghost] = "east";
+    else if(ghostAngle[ghost]%4 == 2)
+        ghosteye[ghost] = "west";
+
+    //ghostX+=0.01;
+    glTranslatef(ghostX[ghost], ghostY[ghost], ghostZ[ghost]);
+    glRotatef((ghostAngle[ghost]%4)*90, 0, 1, 0);
+
+    /* printf("ghostX: %f, ghostY: %f, ghostZ: %f\n", ghostX, ghostY, ghostZ); */
+
+    //Draw ghost
+    ghostLoadObj.drawObj();
+}
+
 void drawObj(){
     glPushMatrix();
-
-    /* glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, m_amb); */
-    /* glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, m_diff); */
-    /* glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, m_spec); */
-    /* glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shiny); */
-
-    /* StdDraw.filledCircle(N/2.0 + 0.5, N/2.0 + 0.5, 0.375); */
     //object's stating location and rotation
     glRotatef(90, -1, 0, 0);
-    glTranslatef(size/2.0 + 6, 0, size/2.0 + 6);
+    glTranslatef(0, 0, 0);
+    glScalef(.5, .5, .5);
+    /* ghostLoadObj.mtlForObj(); */
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, m_amb1);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, m_diff1);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, m_spec1);
+    glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shiny1);
 
     //Object's AI
-
-    /* ghostLoadObj.mtlForObj(); */
-    ghostLoadObj.drawObj();
+    //ghostAI(1);
+    //ghostAI(2);
+    //ghostAI(3);
     glPopMatrix();
 }
 void motion(int mouseX, int mouseY){
