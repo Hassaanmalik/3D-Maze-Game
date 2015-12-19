@@ -53,6 +53,14 @@ float playerY = 2;
 float playerZ = size/2.0 * 6;
 float camPos2[] = {playerX,playerY,playerZ};
 
+//Ghost cordinates
+float ghostX = 0, ghostY = 0, ghostZ = 0;
+int ghostAngle = 0;
+
+//Ghost's eye loaction
+char *ghosteye = "north";
+
+
 int oldMouseX;
 int oldMouseY;
 
@@ -588,196 +596,235 @@ void idle(){
 	glutSetWindow(window2);
 	glutPostRedisplay();
 }
+
+void ghostAI(int ghost){
+    //Check wall colision
+    if(ghosteye == "north")//90
+        ghostX+=0.01;
+    else if(ghosteye == "south")//270
+        ghostX-=0.01;
+    else if(ghosteye == "east")//0
+        ghostZ+=0.01;
+    else if(ghosteye == "west")//180
+        ghostZ-=0.01;
+
+    //if(check(ghostX, ghostZ)){
+        if(ghost == 1){
+            ghostAngle ++;
+        }else if(ghost == 2){
+            ghostAngle --;
+        }
+    //}
+
+    if(ghostAngle%4 == 1)
+        ghosteye = "north";
+    else if(ghostAngle%4 == 3)
+        ghosteye = "south";
+    else if(ghostAngle%4 == 0)
+        ghosteye = "east";
+    else if(ghostAngle%4 == 2)
+        ghosteye = "west";
+
+    //ghostX+=0.01;
+    glTranslatef(ghostX, ghostY, ghostZ);
+    glRotatef((ghostAngle%4)*90, 0, 1, 0);
+
+    printf("ghostX: %f, ghostY: %f, ghostZ: %f\n", ghostX, ghostY, ghostZ);
+
+    //Draw ghost
+    ghostLoadObj.drawObj();
+}
+
 void drawObj(){
     glPushMatrix();
 
-        /* glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, m_amb); */
-	    /* glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, m_diff); */
-	    /* glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, m_spec); */
-	    /* glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shiny); */
+    /* glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, m_amb); */
+    /* glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, m_diff); */
+    /* glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, m_spec); */
+    /* glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shiny); */
 
-        /* StdDraw.filledCircle(N/2.0 + 0.5, N/2.0 + 0.5, 0.375); */
-        //object's stating location and rotation
-        glRotatef(90, -1, 0, 0);
-        glTranslatef(size/2.0 + 6, 0, size/2.0 + 6);
+    /* StdDraw.filledCircle(N/2.0 + 0.5, N/2.0 + 0.5, 0.375); */
+    //object's stating location and rotation
+    glRotatef(90, -1, 0, 0);
+    glTranslatef(0, 10, 0);
+    /* glScalef(.5, .5, .5); */
+    /* ghostLoadObj.mtlForObj(); */
 
-        //Object's AI
-
-		/* ghostLoadObj.mtlForObj(); */
-		ghostLoadObj.drawObj();
-	glPopMatrix();
+    //Object's AI
+    ghostAI(1);
+    glPopMatrix();
 }
 void motion(int mouseX, int mouseY){
 
 
 }
 void passive(int mouseX, int mouseY){
-			//SetCursorPos(0,0);
-			int mid_x = w/2;
-			int mid_y = h/2	;
-			float angleX =0.0f;
-			float angleY=0.0f;
- 
-			if ((mid_x - mouseX) > 0){		// mouse moved to the right
-				angleX -= 0.1f;
-			}
-			else if ((mid_x - mouseX) < 0){	// mouse moved to the left
-				angleX += 0.1f;
-			}
-			if ((mid_y - mouseY) > 0){		// mouse moved to the right
-				angleY += 0.1f;
-			}
-			else if ((mid_y - mouseY) < 0){	// mouse moved to the left
-				angleY -= 0.1f;
-			}
-			viewY += angleY * 2;
-			viewX += angleX * 2;
-	printf("passive: %i,%i\n", mouseX, mouseY);
+    //SetCursorPos(0,0);
+    int mid_x = w/2;
+    int mid_y = h/2	;
+    float angleX =0.0f;
+    float angleY=0.0f;
+
+    if ((mid_x - mouseX) > 0){		// mouse moved to the right
+        angleX -= 0.1f;
+    }
+    else if ((mid_x - mouseX) < 0){	// mouse moved to the left
+        angleX += 0.1f;
+    }
+    if ((mid_y - mouseY) > 0){		// mouse moved to the right
+        angleY += 0.1f;
+    }
+    else if ((mid_y - mouseY) < 0){	// mouse moved to the left
+        angleY -= 0.1f;
+    }
+    viewY += angleY * 2;
+    viewX += angleX * 2;
+    printf("passive: %i,%i\n", mouseX, mouseY);
 
 }
 void mouse(int btn, int state, int mouseX, int mouseY){
-		//case WM_MOUSEMOVE:
-			// save old mouse coordinates
-			//oldMouseX = mouseX;
-			//oldMouseY = mouseY;
- 
-			// get mouse coordinates from Windows
-			//mouseX = LOWORD(lParam);
-			//mouseY = HIWORD(lParam);
- 
-			// these lines limit the camera's range
-			//if (mouseY < 60)
-			//	mouseY = 60;
-			//if (mouseY > 450)
-			//	mouseY = 450;
-/*			float angleX =0.0f;
-			float angleY=0.0f;
- 
-			if ((mouseX - oldMouseX) > 0){		// mouse moved to the right
-				angleX += 3.0f;
-			}
-			else if ((mouseX - oldMouseX) < 0){	// mouse moved to the left
-				angleX -= 3.0f;
-			}
-			if ((mouseY - oldMouseY) > 0){		// mouse moved to the right
-				angleY += 3.0f;
-			}
-			else if ((mouseY - oldMouseY) < 0){	// mouse moved to the left
-				angleY -= 3.0f;
-			}
-			viewY += angleY * 2;
-			viewX =+ angleX * 2;*/
+    //case WM_MOUSEMOVE:
+    // save old mouse coordinates
+    //oldMouseX = mouseX;
+    //oldMouseY = mouseY;
 
-			//return 0;
-			//break;
+    // get mouse coordinates from Windows
+    //mouseX = LOWORD(lParam);
+    //mouseY = HIWORD(lParam);
+
+    // these lines limit the camera's range
+    //if (mouseY < 60)
+    //	mouseY = 60;
+    //if (mouseY > 450)
+    //	mouseY = 450;
+    /*			float angleX =0.0f;
+                float angleY=0.0f;
+
+                if ((mouseX - oldMouseX) > 0){		// mouse moved to the right
+                angleX += 3.0f;
+                }
+                else if ((mouseX - oldMouseX) < 0){	// mouse moved to the left
+                angleX -= 3.0f;
+                }
+                if ((mouseY - oldMouseY) > 0){		// mouse moved to the right
+                angleY += 3.0f;
+                }
+                else if ((mouseY - oldMouseY) < 0){	// mouse moved to the left
+                angleY -= 3.0f;
+                }
+                viewY += angleY * 2;
+                viewX =+ angleX * 2;*/
+
+    //return 0;
+    //break;
 
 
 }
 
 void display(void)
 {
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     /* glClearColor(0.3, 0.3, 0.3, 0.1); */
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
 
     gluLookAt(camPos[0], camPos[1], camPos[2], 0,0,0, 0,1,0);
-	glColor3f(1,1,1);
+    glColor3f(1,1,1);
     /* fog(); */
 
-	//code for drawing the maze
-	//size = 20;
-	/* generateWalls(); */
-	mazeStarter();
-	generateMaze();
-	drawMesh();
-	drawPrize();
+    //code for drawing the maze
+    //size = 20;
+    /* generateWalls(); */
+    mazeStarter();
+    generateMaze();
+    drawMesh();
+    drawPrize();
     /* drawObj(); */
     /* if(checkWin()){ */
     /* } */
-	glutSwapBuffers();
+    glutSwapBuffers();
 }
 void display2()
 {
 
-	//size/2.0 + 6, 0, size/2.0 + 6
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
+    //size/2.0 + 6, 0, size/2.0 + 6
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
 
-	glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
+    glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
 
-	//fog();
-	light();
-	gluLookAt(camPos2[0], camPos2[1], camPos2[2], viewX,viewY,0, 0,1,0);
-	glColor3f(1,1,1);
+    //fog();
+    light();
+    gluLookAt(camPos2[0], camPos2[1], camPos2[2], viewX,viewY,0, 0,1,0);
+    glColor3f(1,1,1);
 
 
-	//code for drawing the maze
-	size = 20;
-	mazeStarter();
-	generateMaze();
-	drawMesh();
-	drawFloor();
+    //code for drawing the maze
+    size = 20;
+    mazeStarter();
+    generateMaze();
+    drawMesh();
+    drawFloor();
 
-	checkStatus();
-	drawPrize();
-	drawObj();
-	glutSwapBuffers();
+    checkStatus();
+    drawPrize();
+    drawObj();
+    glutSwapBuffers();
 }
 
 void glutCallBacks(){
-	glutDisplayFunc(display);	//registers "display" as the display callback function
-	glutKeyboardFunc(keyboard); //registers "keyboard" as the keyboard callback function
-	glutSpecialFunc(special);	//registers "special" as the special function callback
-	glutIdleFunc(idle);
+    glutDisplayFunc(display);	//registers "display" as the display callback function
+    glutKeyboardFunc(keyboard); //registers "keyboard" as the keyboard callback function
+    glutSpecialFunc(special);	//registers "special" as the special function callback
+    glutIdleFunc(idle);
 }
 
 
 
 void glutCallBacks2(){
-	glutDisplayFunc(display2);	//registers "display" as the display callback function
-	glutSpecialFunc(special2);
-	glutMouseFunc(mouse);
-	glutMotionFunc(motion);
-	glutPassiveMotionFunc(passive);
-	//glutKeyboardFunc(keyboard);
-	//glutSpecialFunc(special);
-	//initMenu();
+    glutDisplayFunc(display2);	//registers "display" as the display callback function
+    glutSpecialFunc(special2);
+    glutMouseFunc(mouse);
+    glutMotionFunc(motion);
+    glutPassiveMotionFunc(passive);
+    //glutKeyboardFunc(keyboard);
+    //glutSpecialFunc(special);
+    //initMenu();
 
 }
 
 /* main function - program entry point */
 int main(int argc, char** argv)
 {
-	glutInit(&argc, argv);		//starts up GLUT
+    glutInit(&argc, argv);		//starts up GLUT
 
-	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
 
-	ghostLoadObj.loadObj("ghost", "ObjFile/");
+    ghostLoadObj.loadObj("ghost", "ObjFile/");
 
-	glutInitWindowSize(w, h);
-	glutInitWindowPosition(50, 50);
-	window1 = glutCreateWindow("Maze Top View");	//creates the window
-	glutCallBacks();
-	init();
+    glutInitWindowSize(w, h);
+    glutInitWindowPosition(50, 50);
+    window1 = glutCreateWindow("Maze Top View");	//creates the window
+    glutCallBacks();
+    init();
 
-	glutInitWindowSize(w,h);
-	glutInitWindowPosition(1000,100);
-	window2 = glutCreateWindow("Maze 1st Person");
-	glutCallBacks2();
-	init2();
+    glutInitWindowSize(w,h);
+    glutInitWindowPosition(1000,100);
+    window2 = glutCreateWindow("Maze 1st Person");
+    glutCallBacks2();
+    init2();
 
-	glEnable(GL_TEXTURE_2D);
-	glGenTextures(3, textures); //generate 3 texture IDs, store them in array "textures"
-	texture();
+    glEnable(GL_TEXTURE_2D);
+    glGenTextures(3, textures); //generate 3 texture IDs, store them in array "textures"
+    texture();
 
-	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 
-	glutMainLoop();				//starts the event loop
+    glutMainLoop();				//starts the event loop
 
-	return(0);					//return may not be necessary on all compilers
+    return(0);					//return may not be necessary on all compilers
 }
