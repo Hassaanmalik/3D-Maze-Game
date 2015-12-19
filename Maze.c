@@ -106,6 +106,8 @@ GLuint textures[3];
 
 int width, height, max;
 
+int TrevorsCheatArray[500][4][2];
+int NavleensAPest = 0;
 //used the link to help me create the maze and solve it
 //http://algs4.cs.princeton.edu/41graph/Maze.java.html
 
@@ -261,7 +263,18 @@ void generateMaze(){
 void drawCube (int x, int z, int c, int d){
 	// the vertices as computed from the x and z coordinates
 	int verts [8][3] = {{x,0,z},{x,10,z},{x+halfN+c,10,z},{x+halfN+c,0,z},{x,0,z+halfN+d},{x,10,z+halfN+d},{x+halfN+c,10,z+halfN+d},{x+halfN+c,0,z+halfN+d}};
+	//int verts [8][3] = {{x,0,z},{x,10,z},{x+c,10,z},{x+c,0,z},{x,0,z+d},{x,10,z+d},{+c,10,z+d},{x+c,0,z+d}};
 	// for each face
+	TrevorsCheatArray[NavleensAPest][0][0]=verts[0][0];
+	TrevorsCheatArray[NavleensAPest][1][0]=verts[3][0];
+	TrevorsCheatArray[NavleensAPest][2][0]=verts[4][0];
+	TrevorsCheatArray[NavleensAPest][3][0]=verts[7][0];
+
+	TrevorsCheatArray[NavleensAPest][0][1]=verts[0][2];
+	TrevorsCheatArray[NavleensAPest][1][1]=verts[3][2];
+	TrevorsCheatArray[NavleensAPest][2][1]=verts[4][2];
+	TrevorsCheatArray[NavleensAPest][3][1]=verts[7][2];
+	NavleensAPest++;
 	int vIndex;
 	for (int index = 0; index < 6; index ++){
 		glBindTexture(GL_TEXTURE_2D, textures[0]);
@@ -344,7 +357,50 @@ void drawFloor(){
 		glVertex3f(size*n,0,n);
 	glEnd();
 }
+bool checkValidMove(int projectedX, int projectedZ){
+	for(int j = 0; j <= 5; j ++){
+	printf("x0: %i x1 %i x2 %i x3 %i \n y0: %i y1 %i y2 %i y3 %i \n",TrevorsCheatArray[j][0][0],TrevorsCheatArray[j][1][0],TrevorsCheatArray[j][2][0],TrevorsCheatArray[j][3][0],TrevorsCheatArray[j][1][0],TrevorsCheatArray[j][1][1],TrevorsCheatArray[j][2][1],TrevorsCheatArray[j][3][1]);
 
+		//for(int i = 0; i < 4; i++){
+		//printf("projectedX values is %i \n projected Z is %i \n", projectedX, projectedZ);
+			if(projectedX >= TrevorsCheatArray[j][0][0] && projectedX <= TrevorsCheatArray[j][3][0]){
+				if(projectedZ >= TrevorsCheatArray[j][0][1] && projectedZ <= TrevorsCheatArray[j][3][1]){
+					//printf("true");
+					//printf(" Wall Number : % i     X Range: %i min %i max Zrange: %i min %i Max  \n", j,TrevorsCheatArray[j][0][0],TrevorsCheatArray[j][3][0],TrevorsCheatArray[j][0][1],TrevorsCheatArray[j][3][1]);
+					return false;
+
+				}
+			}
+/*			if(projectedZ >= TrevorsCheatArray[j][0][1] && projectedZ <= TrevorsCheatArray[j][3][1]){
+				return false;
+			}*/
+			//if(TrevorsCheatArray[j][i][0]==projectedX || TrevorsCheatArray[j][i][1]==projectedZ){
+			//	return false;
+				//printf("SHUT UP NAVLEEN");
+				//projectedX = camPos2[0];
+			//}
+			//else{
+			//	camPos2[0]=projectedX;
+				//printf("SHUT UP NAVLEEN");
+
+			//}
+
+			//if(TrevorsCheatArray[j][i][1]==projectedZ){
+				//printf("I FUCKEN KNOW THAT");
+			//	return false;
+			//	projectedZ = camPos2[2];
+			//}
+			//else{
+			//	camPos2[2]=projectedZ;
+			//}
+
+		//}
+
+	}
+	return true;
+	//glutPostRedisplay();
+
+}
 void keyboard(unsigned char key, int x, int y){
 
 	switch (key){
@@ -361,10 +417,8 @@ void keyboard(unsigned char key, int x, int y){
 	glutPostRedisplay();
 }
 
-void special(int key, int x, int y)
-{
-	/* arrow key presses move the camera */
-	switch(key)
+/*void special(int key, int x, int y)
+{	switch(key)
 	{
 		case GLUT_KEY_LEFT:
 			if(camPos[0]>-10){
@@ -400,34 +454,56 @@ void special(int key, int x, int y)
 
 	}
 	glutPostRedisplay();
-}
+}*/
 
 void special2(int key, int x, int y)
 {
+	float tempT = camPos2[0];
+
 	/* arrow key presses move the camera */
 	switch(key)
 	{
 		case GLUT_KEY_LEFT:
+			tempT-=1;
 			//if(camPos2[0]>-10){
-				camPos2[0] -= 1;
+				if(checkValidMove(tempT,camPos2[2])){
+					//camPos2[0] -= 1;
+					printf(" camPos2[0] %f true \n\n\n\n",camPos2[0]);
+
+				}
+				else{
+					//camPos2[0] +=1;
+					printf("camPos2[0]  %f false \n\n\n\n",camPos2[0]);
+				}
+				//camPos2[0] -= 1;
 			//}
 			break;
 
 		case GLUT_KEY_RIGHT:
 			//if(camPos2[0]<size+70){
-				camPos2[0] += 1;
+				if(checkValidMove(camPos2[0]+1,camPos2[2])){
+					camPos2[0] += 1;
+				}
+				//camPos2[0] += 1;
 			//}
 			break;
 
 		case GLUT_KEY_UP:
 			//if(camPos2[2]>70){
-			 	camPos2[2] -= 1;
+				if(checkValidMove(camPos2[0],camPos2[2]-1)){
+					camPos2[2] -= 1;
+				}
+
+			 	//camPos2[2] -= 1;
 			//}
 			break;
 
 		case GLUT_KEY_DOWN:
-			//if(camPos2[2]<size+70){
-				camPos2[2] += 1;
+			//if(camsPos2[2]<size+70){
+				if(checkValidMove(camPos2[0],camPos2[2]+1)){
+					camPos2[2] += 1;
+				}
+//				camPos2[2] += 1;
 			//}
 			break;
 
@@ -659,27 +735,27 @@ void motion(int mouseX, int mouseY){
 
 }
 void passive(int mouseX, int mouseY){
-    //SetCursorPos(0,0);
-    int mid_x = w/2;
-    int mid_y = h/2	;
-    float angleX =0.0f;
-    float angleY=0.0f;
+	//SetCursorPos(0,0);
+	int mid_x = w/2;
+	int mid_y = h/2	;
+	float angleX =0.0f;
+	float angleY=0.0f;
+    if ((mid_x - mouseX) > 0 && oldMouseX > mouseX){		// mouse moved to the left
+		angleX -= 0.1f;
+	}else if ((mid_x - mouseX) < 0 && oldMouseX < mouseX){	// mouse moved to the right
+		angleX += 0.1f;
+	}
+	if ((mid_y - mouseY) > 0){		// mouse moved to the up
+		angleY += 0.1f;
+	}else if ((mid_y - mouseY) < 0){	// mouse moved to the down
+		angleY -= 0.1f;
+	}
+	viewY += angleY * 2;
+	viewX += angleX * 2;
 
-    if ((mid_x - mouseX) > 0){		// mouse moved to the right
-        angleX -= 0.1f;
-    }
-    else if ((mid_x - mouseX) < 0){	// mouse moved to the left
-        angleX += 0.1f;
-    }
-    if ((mid_y - mouseY) > 0){		// mouse moved to the right
-        angleY += 0.1f;
-    }
-    else if ((mid_y - mouseY) < 0){	// mouse moved to the left
-        angleY -= 0.1f;
-    }
-    viewY += angleY * 2;
-    viewX += angleX * 2;
-    printf("passive: %i,%i\n", mouseX, mouseY);
+    oldMouseX = mouseX;
+	oldMouseY = mouseY;
+//	printf("passive: %i,%i\n", mouseX, mouseY);
 
 }
 void mouse(int btn, int state, int mouseX, int mouseY){
@@ -754,10 +830,11 @@ void display2()
 
     glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
 
-    //fog();
-    light();
-    gluLookAt(camPos2[0], camPos2[1], camPos2[2], viewX,viewY,0, 0,1,0);
-    glColor3f(1,1,1);
+	//fog();
+	light();
+	gluLookAt(camPos2[0], camPos2[1], camPos2[2], viewX,viewY,0, 0,1,0);
+	//printf("The viewX angle is %f \n the viewY angle is %f \n", viewX, viewY);
+	glColor3f(1,1,1);
 
 
     //code for drawing the maze
@@ -767,17 +844,17 @@ void display2()
     drawMesh();
     drawFloor();
 
-    checkStatus();
-    drawPrize();
-    drawObj();
-    glutSwapBuffers();
+	checkStatus();
+	drawPrize();
+	drawObj();
+	glutSwapBuffers();
 }
 
 void glutCallBacks(){
-    glutDisplayFunc(display);	//registers "display" as the display callback function
-    glutKeyboardFunc(keyboard); //registers "keyboard" as the keyboard callback function
-    glutSpecialFunc(special);	//registers "special" as the special function callback
-    glutIdleFunc(idle);
+	glutDisplayFunc(display);	//registers "display" as the display callback function
+	glutKeyboardFunc(keyboard); //registers "keyboard" as the keyboard callback function
+	//glutSpecialFunc(special);	//registers "special" as the special function callback
+	glutIdleFunc(idle);
 }
 
 
