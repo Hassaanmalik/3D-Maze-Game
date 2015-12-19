@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
-#include <math.h> //added math libary to code to allow for use of sin,cos and sqrt
+#include <math.h> //added math libary to code to allow for mouse and others
 
 #ifdef __APPLE__
 #  include <OpenGL/gl.h>
@@ -38,7 +38,7 @@ int pz = 78;
 
 
 
-GLfloat light_pos[] = {0.0,100.0,0,1.0};
+GLfloat light_pos[] = {60,100.0,60,1.0};
 
 //maze variables
 int size = 20; //change size variable to global
@@ -54,11 +54,11 @@ float playerZ = size/2.0 * 6;
 float camPos2[] = {playerX,playerY,playerZ};
 
 //Ghost cordinates
-float ghostX = 0, ghostY = 0, ghostZ = 0;
-int ghostAngle = 0;
+float ghostX[3] = {0,0,0}, ghostY[3] = {0,0,0}, ghostZ[3] = {0,0,0};
+int ghostAngle[3] = {0,0,0};
 
 //Ghost's eye loaction
-char *ghosteye = "north";
+char *ghosteye[3] = {"north","north","north"};
 
 
 int oldMouseX;
@@ -91,11 +91,16 @@ float viewZ=0;
 const double rad = 3.141592654 / 180.0;
 
 //materials
-
+//wall material
 float m_amb[] ={ 0.05375f, 0.05f, 0.06625f, 0.82f };
 float m_diff[] ={ 0.18275f, 0.17f, 0.22525f, 0.82f};
 float m_spec[] ={0.332741f, 0.328634f, 0.346435f, 0.82f };
 float shiny =38.4f ;
+//floor material
+float m_amb1[] ={0.0f, 0.0f, 0.0f, 1.0f };
+float m_diff1[] ={0.01f, 0.01f, 0.01f, 1.0f };
+float m_spec1[] ={0.50f, 0.50f, 0.50f, 1.0f };
+float shiny1 =32.0f ;
 
 //an array for iamge data
 GLubyte* tex1;
@@ -166,7 +171,7 @@ GLubyte* LoadPPM(char* file, int* width, int* height, int* max)
 }
 
 void texture(){
-	tex1 = LoadPPM("rockypath.ppm", &width, &height, &max);
+	tex1 = LoadPPM("bricks.ppm", &width, &height, &max);
 	glBindTexture(GL_TEXTURE_2D, textures[0]); //Stores the texture at the array location 0
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); //Sets up needed texture properites
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
@@ -263,19 +268,15 @@ void generateMaze(){
 void drawCube (int x, int z, int c, int d){
 	// the vertices as computed from the x and z coordinates
 	int verts [8][3] = {{x,0,z},{x,10,z},{x+halfN+c,10,z},{x+halfN+c,0,z},{x,0,z+halfN+d},{x,10,z+halfN+d},{x+halfN+c,10,z+halfN+d},{x+halfN+c,0,z+halfN+d}};
-	//int verts [8][3] = {{x,0,z},{x,10,z},{x+c,10,z},{x+c,0,z},{x,0,z+d},{x,10,z+d},{+c,10,z+d},{x+c,0,z+d}};
-	// for each face
-	TrevorsCheatArray[NavleensAPest][0][0]=verts[0][0];
-	TrevorsCheatArray[NavleensAPest][1][0]=verts[3][0];
-	TrevorsCheatArray[NavleensAPest][2][0]=verts[4][0];
-	TrevorsCheatArray[NavleensAPest][3][0]=verts[7][0];
-
-	TrevorsCheatArray[NavleensAPest][0][1]=verts[0][2];
-	TrevorsCheatArray[NavleensAPest][1][1]=verts[3][2];
-	TrevorsCheatArray[NavleensAPest][2][1]=verts[4][2];
-	TrevorsCheatArray[NavleensAPest][3][1]=verts[7][2];
-	NavleensAPest++;
+	//for each face
 	int vIndex;
+
+	glPushMatrix();
+	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, m_amb);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, m_diff);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, m_spec);
+	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shiny);
+
 	for (int index = 0; index < 6; index ++){
 		glBindTexture(GL_TEXTURE_2D, textures[0]);
 		glBegin(GL_POLYGON);
@@ -299,6 +300,7 @@ void drawCube (int x, int z, int c, int d){
 		//	}
 		glEnd();
 	}
+	glPopMatrix();
 }
 
 
@@ -341,23 +343,32 @@ void cleanArrays(){
 }
 
 void drawFloor(){
+	glPushMatrix();
+	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, m_amb1);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, m_diff1);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, m_spec1);
+	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shiny1);
+
 	glBindTexture(GL_TEXTURE_2D, textures[1]);
+
 	glBegin(GL_POLYGON);
 
 		glTexCoord2f(0,1);
 		glVertex3f(n,0,n);
 
 		glTexCoord2f(0,0);
-		glVertex3f(n,0,size*n);
+		glVertex3f(n,0,size*n+n);
 
 		glTexCoord2f(1,0);
-		glVertex3f(size*n,0,size*n);
+		glVertex3f(size*n+n,0,size*n+n);
 
 		glTexCoord2f(1,1);
-		glVertex3f(size*n,0,n);
+		glVertex3f(size*n+n,0,n);
 	glEnd();
+	glPopMatrix();
 }
-bool checkValidMove(int projectedX, int projectedZ){
+
+/*bool checkValidMove(int projectedX, int projectedZ){
 	for(int j = 0; j <= 5; j ++){
 	printf("x0: %i x1 %i x2 %i x3 %i \n y0: %i y1 %i y2 %i y3 %i \n",TrevorsCheatArray[j][0][0],TrevorsCheatArray[j][1][0],TrevorsCheatArray[j][2][0],TrevorsCheatArray[j][3][0],TrevorsCheatArray[j][1][0],TrevorsCheatArray[j][1][1],TrevorsCheatArray[j][2][1],TrevorsCheatArray[j][3][1]);
 
@@ -371,9 +382,9 @@ bool checkValidMove(int projectedX, int projectedZ){
 
 				}
 			}
-/*			if(projectedZ >= TrevorsCheatArray[j][0][1] && projectedZ <= TrevorsCheatArray[j][3][1]){
+			if(projectedZ >= TrevorsCheatArray[j][0][1] && projectedZ <= TrevorsCheatArray[j][3][1]){
 				return false;
-			}*/
+			}
 			//if(TrevorsCheatArray[j][i][0]==projectedX || TrevorsCheatArray[j][i][1]==projectedZ){
 			//	return false;
 				//printf("SHUT UP NAVLEEN");
@@ -400,6 +411,36 @@ bool checkValidMove(int projectedX, int projectedZ){
 	return true;
 	//glutPostRedisplay();
 
+}*/
+
+bool hitTest(float x, float z){
+	printf("x: %f,z: %f\n",x,z);
+	int i = ceil(x/6)*6;
+	int j = ceil(z/6)*6;
+	printf("i: %i,j: %i\n",i,j);
+	//||south[i][j]||east[i][j]||west[i][j]
+	if(i ==n ||j==n || i == size*n || j==size*n){
+		printf("border false\n");
+		return false;
+	}
+	if(north[i][j]){
+		printf("north false\n");
+		return false;
+	}
+	if(south[i][j]){
+		printf("south false\n");
+		return false;
+	}
+	if(west[i][j]){
+		printf("west false\n");
+		return false;
+	}
+	if(east[i][j]|| i == size*n){
+		printf("east false\n");
+		return false;
+	}
+		printf("true\n");
+	return true;
 }
 void keyboard(unsigned char key, int x, int y){
 
@@ -463,16 +504,16 @@ void special2(int key, int x, int y)
 	/* arrow key presses move the camera */
 	switch(key)
 	{
-		case GLUT_KEY_LEFT:
+/*		case GLUT_KEY_LEFT:
 			tempT-=1;
 			//if(camPos2[0]>-10){
-				if(checkValidMove(tempT,camPos2[2])){
-					//camPos2[0] -= 1;
+				if(hitTest(tempT,camPos2[2])){
+					camPos2[0] -= 1;
 					printf(" camPos2[0] %f true \n\n\n\n",camPos2[0]);
 
 				}
 				else{
-					//camPos2[0] +=1;
+					camPos2[0] +=1;
 					printf("camPos2[0]  %f false \n\n\n\n",camPos2[0]);
 				}
 				//camPos2[0] -= 1;
@@ -481,7 +522,7 @@ void special2(int key, int x, int y)
 
 		case GLUT_KEY_RIGHT:
 			//if(camPos2[0]<size+70){
-				if(checkValidMove(camPos2[0]+1,camPos2[2])){
+				if(hitTest(camPos2[0]+1,camPos2[2])){
 					camPos2[0] += 1;
 				}
 				//camPos2[0] += 1;
@@ -490,7 +531,7 @@ void special2(int key, int x, int y)
 
 		case GLUT_KEY_UP:
 			//if(camPos2[2]>70){
-				if(checkValidMove(camPos2[0],camPos2[2]-1)){
+				if(hitTest(camPos2[0],camPos2[2]-1)){
 					camPos2[2] -= 1;
 				}
 
@@ -500,12 +541,49 @@ void special2(int key, int x, int y)
 
 		case GLUT_KEY_DOWN:
 			//if(camsPos2[2]<size+70){
-				if(checkValidMove(camPos2[0],camPos2[2]+1)){
+				if(hitTest(camPos2[0],camPos2[2]+1)){
 					camPos2[2] += 1;
 				}
 //				camPos2[2] += 1;
 			//}
+			break;*/
+
+		case GLUT_KEY_UP:
+			if(hitTest(camPos2[0],camPos2[2])){
+				camPos2[2] += 1;
+			}
+			else{
+				//camPos2[2] -= 1;
+			}
 			break;
+
+		case GLUT_KEY_DOWN:
+			if(hitTest(camPos2[0],camPos2[2])){
+				camPos2[2] -= 1;
+			}
+			else{
+				//camPos2[2] += 1;
+			}
+			break;
+
+		case GLUT_KEY_LEFT:
+			if(hitTest(camPos2[0],camPos2[2])){
+				camPos2[0] -= 1;
+			}
+			else{
+				camPos2[0] += 1;
+			}
+			break;
+
+		case GLUT_KEY_RIGHT:
+			if(hitTest(camPos2[0],camPos2[2])){
+				camPos2[0] += 1;
+			}
+			else{
+				//camPos2[0] -= 1;
+			}
+			break;
+
 
 		case GLUT_KEY_HOME:
 			camPos2[1] += 1;
@@ -599,8 +677,8 @@ void light(){
 
 	//GLfloat position[] = {0.0,100.0,0,1.0};
 	float amb0[4] = {1, 1, 1, 1};
-	float diff0[4] = {1, 0, 0, 1};
-	float spec0[4] = {0, 0, 1, 1};
+	float diff0[4] = {1, 1, 1, 1};
+	float spec0[4] = {1, 1, 1, 1};
 
 	// set the values for the first light source
 	glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
@@ -616,10 +694,10 @@ void light(){
     /* m_spec = ghostLoadObj.getReflectivity(); */
     /* shiny = ghostLoadObj.getPhongSpecular(); */
 
-	/* glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, m_amb); */
-	/* glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, m_diff); */
-	/* glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, m_spec); */
-	/* glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shiny); */
+/*	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, m_amb);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, m_diff);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, m_spec);
+	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shiny);*/
 
 }
 
@@ -675,37 +753,39 @@ void idle(){
 
 void ghostAI(int ghost){
     //Check wall colision
-    if(ghosteye == "north")//90
-        ghostX+=0.01;
-    else if(ghosteye == "south")//270
-        ghostX-=0.01;
-    else if(ghosteye == "east")//0
-        ghostZ+=0.01;
-    else if(ghosteye == "west")//180
-        ghostZ-=0.01;
+    if(ghosteye[ghost] == "north")//90
+        ghostX[ghost]+=0.01;
+    else if(ghosteye[ghost] == "south")//270
+        ghostX[ghost]-=0.01;
+    else if(ghosteye[ghost] == "east")//0
+        ghostZ[ghost]+=0.01;
+    else if(ghosteye[ghost] == "west")//180
+        ghostZ[ghost]-=0.01;
 
-    //if(check(ghostX, ghostZ)){
+    if(hitTest(ghostX[ghost], ghostZ[ghost])){
         if(ghost == 1){
-            ghostAngle ++;
+            ghostAngle[ghost] ++;
         }else if(ghost == 2){
-            ghostAngle --;
+            ghostAngle[ghost] --;
+        }else if(ghost == 3){
+            //Follow player
         }
-    //}
+    }
 
-    if(ghostAngle%4 == 1)
-        ghosteye = "north";
-    else if(ghostAngle%4 == 3)
-        ghosteye = "south";
-    else if(ghostAngle%4 == 0)
-        ghosteye = "east";
-    else if(ghostAngle%4 == 2)
-        ghosteye = "west";
+    if(ghostAngle[ghost]%4 == 1)
+        ghosteye[ghost] = "north";
+    else if(ghostAngle[ghost]%4 == 3)
+        ghosteye[ghost] = "south";
+    else if(ghostAngle[ghost]%4 == 0)
+        ghosteye[ghost] = "east";
+    else if(ghostAngle[ghost]%4 == 2)
+        ghosteye[ghost] = "west";
 
     //ghostX+=0.01;
-    glTranslatef(ghostX, ghostY, ghostZ);
-    glRotatef((ghostAngle%4)*90, 0, 1, 0);
+    glTranslatef(ghostX[ghost], ghostY[ghost], ghostZ[ghost]);
+    glRotatef((ghostAngle[ghost]%4)*90, 0, 1, 0);
 
-    printf("ghostX: %f, ghostY: %f, ghostZ: %f\n", ghostX, ghostY, ghostZ);
+    /* printf("ghostX: %f, ghostY: %f, ghostZ: %f\n", ghostX, ghostY, ghostZ); */
 
     //Draw ghost
     ghostLoadObj.drawObj();
@@ -713,21 +793,20 @@ void ghostAI(int ghost){
 
 void drawObj(){
     glPushMatrix();
-
-    /* glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, m_amb); */
-    /* glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, m_diff); */
-    /* glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, m_spec); */
-    /* glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shiny); */
-
-    /* StdDraw.filledCircle(N/2.0 + 0.5, N/2.0 + 0.5, 0.375); */
     //object's stating location and rotation
     glRotatef(90, -1, 0, 0);
-    glTranslatef(0, 10, 0);
-    /* glScalef(.5, .5, .5); */
+    glTranslatef(0, 0, 0);
+    glScalef(.5, .5, .5);
     /* ghostLoadObj.mtlForObj(); */
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, m_amb1);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, m_diff1);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, m_spec1);
+    glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shiny1);
 
     //Object's AI
-    ghostAI(1);
+    //ghostAI(1);
+    //ghostAI(2);
+    //ghostAI(3);
     glPopMatrix();
 }
 void motion(int mouseX, int mouseY){
@@ -830,7 +909,7 @@ void display2()
 
     glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
 
-	//fog();
+	fog();
 	light();
 	gluLookAt(camPos2[0], camPos2[1], camPos2[2], viewX,viewY,0, 0,1,0);
 	//printf("The viewX angle is %f \n the viewY angle is %f \n", viewX, viewY);
@@ -860,14 +939,14 @@ void glutCallBacks(){
 
 
 void glutCallBacks2(){
-    glutDisplayFunc(display2);	//registers "display" as the display callback function
-    glutSpecialFunc(special2);
-    glutMouseFunc(mouse);
-    glutMotionFunc(motion);
-    glutPassiveMotionFunc(passive);
-    //glutKeyboardFunc(keyboard);
-    //glutSpecialFunc(special);
-    //initMenu();
+	glutDisplayFunc(display2);	//registers "display" as the display callback function
+	glutSpecialFunc(special2);
+	glutMouseFunc(mouse);
+	glutMotionFunc(motion);
+	glutPassiveMotionFunc(passive);
+	glutKeyboardFunc(keyboard);
+	//glutSpecialFunc(special);
+	//initMenu();
 
 }
 
