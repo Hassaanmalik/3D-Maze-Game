@@ -558,15 +558,19 @@ void special2(int key, int x, int y)
 		case GLUT_KEY_UP:
 			//if(hitTest(camPos2[0],camPos2[2])){
 				if(northPlayer){
-				camPos2[2] -= 1;
+					camPos2[2] -= 1;
+					light_pos[2] -= 1;
 				}
 				else if(southPlayer){
 					camPos2[2] +=1;
+					light_pos[2] +=1;
 				}
 				else if(eastPlayer){
-					camPos2[0] +=1; 
+					camPos2[0] +=1;
+					light_pos[0] += 1; 
 				}
 				else if(westPlayer){
+					light_pos[0] -=1;
 					camPos2[0] -=1;
 				}
 			//}
@@ -578,16 +582,20 @@ void special2(int key, int x, int y)
 		case GLUT_KEY_DOWN:
 			//if(hitTest(camPos2[0],camPos2[2])){
 				if(northPlayer){
-				camPos2[2] += 1;
+					camPos2[2] += 1;
+					light_pos[2] += 1;
 				}
 				else if(southPlayer){
 					camPos2[2] -=1;
+					light_pos[2] +=1;
 				}
 				else if(eastPlayer){
-					camPos2[0] -=1; 
+					camPos2[0] -= 1; 
+					light_pos[0] -= 1;
 				}
 				else if(westPlayer){
 					camPos2[0] +=1;
+					light_pos[0] +=1;
 				}
 			//}
 			//else{
