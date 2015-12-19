@@ -118,8 +118,6 @@ GLuint textures[3];
 
 int width, height, max;
 
-int TrevorsCheatArray[500][4][2];
-int NavleensAPest = 0;
 //used the link to help me create the maze and solve it
 //http://algs4.cs.princeton.edu/41graph/Maze.java.html
 
@@ -411,9 +409,9 @@ void drawFloor(){
 			//else{
 			//	camPos2[2]=projectedZ;
 			//}
-	
+
 		//}
-		
+
 	}
 	return true;
 	//glutPostRedisplay();
@@ -464,584 +462,420 @@ void keyboard(unsigned char key, int x, int y){
 	}
 	glutPostRedisplay();
 }
-/*
-void special(int key, int x, int y)
-{	switch(key)
-	{
-		case GLUT_KEY_LEFT:
-			if(camPos[0]>-10){
-				camPos[0] -= 2;
-			}
-			break;
-
-		case GLUT_KEY_RIGHT:
-			if(camPos[0]<size+70){
-				camPos[0] += 2;
-			}
-			break;
-
-		case GLUT_KEY_UP:
-			camPos[2] -= 2;
-			break;
-
-		case GLUT_KEY_DOWN:
-			if(camPos[2]<size+70){
-				camPos[2] += 2;
-			}
-			break;
-
-		case GLUT_KEY_HOME:
-			camPos[1] += 50;
-			break;
-
-		case GLUT_KEY_END:
-			if(camPos[1]>10){
-				camPos[1] -= 50;
-			}
-			break;
-
-	}
-	glutPostRedisplay();
-}
-*/
 void special2(int key, int x, int y)
 {
 	float tempT = camPos2[0];
 
 	/* arrow key presses move the camera */
 	switch(key)
-	{
-/*		case GLUT_KEY_LEFT:
-			tempT-=1;
-			//if(camPos2[0]>-10){
-				if(hitTest(tempT,camPos2[2])){
-					camPos2[0] -= 1;
-					printf(" camPos2[0] %f true \n\n\n\n",camPos2[0]);
+    {
+        case GLUT_KEY_UP:
+            //if(hitTest(camPos2[0],camPos2[2])){
+            if(northPlayer){
+                camPos2[2] -= 1;
+                light_pos[2] -= 1;
+            }
+            else if(southPlayer){
+                camPos2[2] +=1;
+                light_pos[2] +=1;
+            }
+            else if(eastPlayer){
+                camPos2[0] +=1;
+                light_pos[0] += 1;
+            }
+            else if(westPlayer){
+                light_pos[0] -=1;
+                camPos2[0] -=1;
+            }
+            //}
+            //else{
+            //	camPos2[2] -= 1;
+            //}
+            break;
 
-				}
-				else{
-					camPos2[0] +=1;
-					printf("camPos2[0]  %f false \n\n\n\n",camPos2[0]);
-				}
-				//camPos2[0] -= 1;
-			//}
-			break;
+        case GLUT_KEY_DOWN:
+            //if(hitTest(camPos2[0],camPos2[2])){
+            if(northPlayer){
+                camPos2[2] += 1;
+                light_pos[2] += 1;
+            }
+            else if(southPlayer){
+                camPos2[2] -=1;
+                light_pos[2] +=1;
+            }
+            else if(eastPlayer){
+                camPos2[0] -= 1;
+                light_pos[0] -= 1;
+            }
+            else if(westPlayer){
+                camPos2[0] +=1;
+                light_pos[0] +=1;
+            }
+            //}
+            //else{
+            //	camPos2[2] += 1;
+            //}
+            break;
 
-		case GLUT_KEY_RIGHT:
-			//if(camPos2[0]<size+70){
-				if(hitTest(camPos2[0]+1,camPos2[2])){
-					camPos2[0] += 1;
-				}
-				//camPos2[0] += 1;
-			//}
-			break;
+        case GLUT_KEY_LEFT:
+            viewXOrigin -= 90;
+            if(northPlayer){
+                westPlayer = true;
+                northPlayer = false;
+            }
+            else if(westPlayer){
+                southPlayer = true;
+                westPlayer = false;
+            }
+            else if(southPlayer){
+                eastPlayer = true;
+                southPlayer = false;
+            }
+            else if(eastPlayer){
+                northPlayer = true;
+                eastPlayer = false;
+            }
+            break;
 
-		case GLUT_KEY_UP:
-			//if(camPos2[2]>70){
-				if(hitTest(camPos2[0],camPos2[2]-1)){
-					camPos2[2] -= 1;
-				}
-
-			 	//camPos2[2] -= 1;
-			//}
-			break;
-
-		case GLUT_KEY_DOWN:
-			//if(camsPos2[2]<size+70){
-				if(hitTest(camPos2[0],camPos2[2]+1)){
-					camPos2[2] += 1;
-				}
-//				camPos2[2] += 1;
-			//}
-			break;*/
-
-		case GLUT_KEY_UP:
-			//if(hitTest(camPos2[0],camPos2[2])){
-				if(northPlayer){
-					camPos2[2] -= 1;
-					light_pos[2] -= 1;
-				}
-				else if(southPlayer){
-					camPos2[2] +=1;
-					light_pos[2] +=1;
-				}
-				else if(eastPlayer){
-					camPos2[0] +=1;
-					light_pos[0] += 1; 
-				}
-				else if(westPlayer){
-					light_pos[0] -=1;
-					camPos2[0] -=1;
-				}
-			//}
-			//else{
-			//	camPos2[2] -= 1;
-			//}
-			break;
-
-		case GLUT_KEY_DOWN:
-			//if(hitTest(camPos2[0],camPos2[2])){
-				if(northPlayer){
-					camPos2[2] += 1;
-					light_pos[2] += 1;
-				}
-				else if(southPlayer){
-					camPos2[2] -=1;
-					light_pos[2] +=1;
-				}
-				else if(eastPlayer){
-					camPos2[0] -= 1; 
-					light_pos[0] -= 1;
-				}
-				else if(westPlayer){
-					camPos2[0] +=1;
-					light_pos[0] +=1;
-				}
-			//}
-			//else{
-			//	camPos2[2] += 1;
-			//}
-			break;
-
-		case GLUT_KEY_LEFT:
-			viewXOrigin -= 90;
-			if(northPlayer){
-				westPlayer = true;
-				northPlayer = false;
-			}
-			else if(westPlayer){
-				southPlayer = true;
-				westPlayer = false;
-			}
-			else if(southPlayer){
-				eastPlayer = true;
-				southPlayer = false;
-			}
-			else if(eastPlayer){
-				northPlayer = true;
-				eastPlayer = false;
-			}
+        case GLUT_KEY_RIGHT:
+            viewXOrigin += 90;
+            if(northPlayer){
+                eastPlayer = true;
+                northPlayer = false;
+            }
+            else if(eastPlayer){
+                southPlayer = true;
+                eastPlayer = false;
+            }
+            else if(southPlayer){
+                westPlayer = true;
+                southPlayer = false;
+            }
+            else if(westPlayer){
+                northPlayer = true;
+                westPlayer = false;
+            }
+            break;
 
 
-				//glTranslatef(-camPos2[0],-camPos2[1],-camPos2[2]);
-				//glRotatef(25,1,0,0);
-				//glRotatef(45,0,1,0);
-				//glTranslatef(-camPos2[0],-camPos2[1],-camPos2[2]);
+        case GLUT_KEY_HOME:
+            camPos2[1] += 1;
+            break;
 
-				//glTranslatef(camPos2[0],camPos2[1],camPos2[2]);
-				//
-		//test += 5;
-				//glRotatef(90,0,0,1);
-				//viewXOrigin -= 90;
+        case GLUT_KEY_END:
+            //if(camPos2[1]>10){
+            camPos2[1] -= 1;
+            //}
+            break;
 
-			break;
-
-		case GLUT_KEY_RIGHT:
-			viewXOrigin += 90;
-			if(northPlayer){
-				eastPlayer = true;
-				northPlayer = false;
-			}
-			else if(eastPlayer){
-				southPlayer = true;
-				eastPlayer = false;
-			}
-			else if(southPlayer){
-				westPlayer = true;
-				southPlayer = false;
-			}
-			else if(westPlayer){
-				northPlayer = true;
-				westPlayer = false;
-			}
-			break;
-
-
-		case GLUT_KEY_HOME:
-			camPos2[1] += 1;
-			break;
-
-		case GLUT_KEY_END:
-			//if(camPos2[1]>10){
-			camPos2[1] -= 1;
-			//}
-			break;
-
-	}
-	glutPostRedisplay();
+    }
+    glutPostRedisplay();
 }
 
 void showWin(const char *text, int length, int x, int y){
-	glDisable(GL_LIGHTING);
-	glDisable(GL_FOG);
-	glMatrixMode(GL_PROJECTION);
-	double *matrix = new double [16];
-	glGetDoublev(GL_PROJECTION_MATRIX, matrix);
-	glLoadIdentity();
-	glOrtho(0,800,0,600,-5,5);
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-	glPushMatrix();
-	glLoadIdentity();
-	glRasterPos2i(x,y);
-	for(int i = 0; i < length; i ++){
-		glColor3f(0,1,0);
-		glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, (int)text[i]);
-	}
-	glPopMatrix();
-	glMatrixMode(GL_PROJECTION);
-	glLoadMatrixd(matrix);
-	glMatrixMode(GL_MODELVIEW);
-	glEnable(GL_LIGHTING);
-//	glEnable(GL_FOG);
+    glDisable(GL_LIGHTING);
+    glDisable(GL_FOG);
+    glMatrixMode(GL_PROJECTION);
+    double *matrix = new double [16];
+    glGetDoublev(GL_PROJECTION_MATRIX, matrix);
+    glLoadIdentity();
+    glOrtho(0,800,0,600,-5,5);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    glPushMatrix();
+    glLoadIdentity();
+    glRasterPos2i(x,y);
+    for(int i = 0; i < length; i ++){
+        glColor3f(0,1,0);
+        glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, (int)text[i]);
+    }
+    glPopMatrix();
+    glMatrixMode(GL_PROJECTION);
+    glLoadMatrixd(matrix);
+    glMatrixMode(GL_MODELVIEW);
+    glEnable(GL_LIGHTING);
+    //	glEnable(GL_FOG);
 
 }
 
 bool checkWin(){
-	if (camPos2[0] == px && camPos[2]==pz){
-		std::string text;
-		text = "You Won!";
-		showWin(text.data(), text.size(), 300,350);
-		return true;
-	}
-	return false;
+    if (camPos2[0] == px && camPos[2]==pz){
+        std::string text;
+        text = "You Won!";
+        showWin(text.data(), text.size(), 300,350);
+        return true;
+    }
+    return false;
 }
 
 bool checkLose(){
-	if (camPos2[0] == px && camPos[2]==pz){ // change to equal AI
-		std::string text;
-		text = "You Lost....";
-		showWin(text.data(), text.size(), 300,350);
-		return true;
-	}
-	return false;
+    if (camPos2[0] == px && camPos[2]==pz){ // change to equal AI
+        std::string text;
+        text = "You Lost....";
+        showWin(text.data(), text.size(), 300,350);
+        return true;
+    }
+    return false;
 }
 
 
 // draw a tropy for the user to get to
 void drawPrize(){
-	// turn off fog for that one object
-	glDisable(GL_FOG);
+    // turn off fog for that one object
+    glDisable(GL_FOG);
 
-	glPushMatrix();
-	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, m_amb2);
-	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, m_diff2);
-	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, m_spec2);
-	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shiny2);
+    glPushMatrix();
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, m_amb2);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, m_diff2);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, m_spec2);
+    glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shiny2);
 
 
-	// move to that position in the maze
-	glTranslatef(px+4,py+3,pz+4);
-	glRotatef(90,1,0,0);
-	glutSolidCone(1,1,20,20);
-	GLUquadricObj *quadratic= gluNewQuadric();
-	gluCylinder(quadratic,0.3,0.3, 2, 40,5); 	// draw body
-	gluCylinder(quadratic,1,0.5, 1, 40,5);		// draw cup
-	glTranslatef(0,0,2); 						// move to the bottom
-	glutSolidTorus(0.1,0.4,30, 30); 			// draw base
+    // move to that position in the maze
+    glTranslatef(px+4,py+3,pz+4);
+    glRotatef(90,1,0,0);
+    glutSolidCone(1,1,20,20);
+    GLUquadricObj *quadratic= gluNewQuadric();
+    gluCylinder(quadratic,0.3,0.3, 2, 40,5); 	// draw body
+    gluCylinder(quadratic,1,0.5, 1, 40,5);		// draw cup
+    glTranslatef(0,0,2); 						// move to the bottom
+    glutSolidTorus(0.1,0.4,30, 30); 			// draw base
 
-	glPopMatrix();
+    glPopMatrix();
 }
 
 void checkStatus(){
-	// if win; need to fix this code so it will exit upon a win condition (ie Trevor?)
-	if(checkWin()){
-		exit(1);
-	}
-	if(checkLose()){
-		exit(1);
-	}
+    // if win; need to fix this code so it will exit upon a win condition (ie Trevor?)
+    if(checkWin()){
+        exit(1);
+    }
+    if(checkLose()){
+        exit(1);
+    }
 }
 
 void light(){
-	glColor3f(1, 1, 1);
+    glColor3f(1, 1, 1);
 
-	//GLfloat position[] = {0.0,100.0,0,1.0};
-	float amb0[4] = {1, 1, 1, 1};
-	float diff0[4] = {1, 1, 1, 1};
-	float spec0[4] = {1, 1, 1, 1};
+    //GLfloat position[] = {0.0,100.0,0,1.0};
+    float amb0[4] = {1, 1, 1, 1};
+    float diff0[4] = {1, 1, 1, 1};
+    float spec0[4] = {1, 1, 1, 1};
 
-	// set the values for the first light source
-	glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
-	glLightfv(GL_LIGHT0, GL_AMBIENT, amb0);
-	glLightfv(GL_LIGHT0, GL_DIFFUSE, diff0);
-	glLightfv(GL_LIGHT0, GL_SPECULAR, spec0);
+    // set the values for the first light source
+    glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
+    glLightfv(GL_LIGHT0, GL_AMBIENT, amb0);
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, diff0);
+    glLightfv(GL_LIGHT0, GL_SPECULAR, spec0);
 
     glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
 
-    /* m_amb = ghostLoadObj.getAmbient(); */
-    /* m_diff = ghostLoadObj.getDiffuse(); */
-    /* m_spec = ghostLoadObj.getReflectivity(); */
-    /* shiny = ghostLoadObj.getPhongSpecular(); */
-
-/*	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, m_amb);
-	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, m_diff);
-	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, m_spec);
-	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shiny);*/
-
 }
 
 void fog(){
-	glClearColor(0.3, 0.3, 0.3, 0.1);
-	glColor3f(1, 1, 1);
+    glClearColor(0.3, 0.3, 0.3, 0.1);
+    glColor3f(1, 1, 1);
 
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	gluPerspective(45, 1, 1, 1000);
-	glMatrixMode(GL_MODELVIEW);
-	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_BLEND);
-	glEnable(GL_FOG);
-	{
-	GLfloat fogColor[] = {0.4f, 0.4f, 0.4f, 0.1};
-    glFogfv(GL_FOG_COLOR, fogColor);
-    glFogfv(GL_FOG_COLOR, fogColor);
-    glFogi(GL_FOG_MODE, GL_EXP);
-    glFogf(GL_FOG_START, 45.0f);
-    glFogf(GL_FOG_END, 1000.0f);
-    glFogf (GL_FOG_DENSITY, 0.15);
-    glHint(GL_FOG_HINT,GL_FASTEST);
-	}
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluPerspective(45, 1, 1, 1000);
+    glMatrixMode(GL_MODELVIEW);
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_BLEND);
+    glEnable(GL_FOG);
+    {
+        GLfloat fogColor[] = {0.4f, 0.4f, 0.4f, 0.1};
+        glFogfv(GL_FOG_COLOR, fogColor);
+        glFogfv(GL_FOG_COLOR, fogColor);
+        glFogi(GL_FOG_MODE, GL_EXP);
+        glFogf(GL_FOG_START, 45.0f);
+        glFogf(GL_FOG_END, 1000.0f);
+        glFogf (GL_FOG_DENSITY, 0.15);
+        glHint(GL_FOG_HINT,GL_FASTEST);
+    }
 }
 
 void init(void){
-//	glClearColor(0.3, 0.3, 0.3, 0.1);
-	glColor3f(1, 1, 1);
+    //	glClearColor(0.3, 0.3, 0.3, 0.1);
+    glColor3f(1, 1, 1);
 
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	gluPerspective(45, 1, 1, 1000);
-//	light();
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluPerspective(45, 1, 1, 1000);
+    //	light();
 
 
 }
 void init2(void){
-	glClearColor(0.3, 0.3, 0.3, 0.1);
-	glColor3f(1, 1, 1);
+    glClearColor(0.3, 0.3, 0.3, 0.1);
+    glColor3f(1, 1, 1);
 
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	gluPerspective(45, 2, 1, 1000);
-	//glRotatef(45,camPos2[0],camPos2[1],camPos2[2]);
-	//light();
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluPerspective(45, 2, 1, 1000);
+    //glRotatef(45,camPos2[0],camPos2[1],camPos2[2]);
+    //light();
 }
 void idle(){
-	glutSetWindow(window1);
-	glutPostRedisplay();
-	glutSetWindow(window2);
-	glutPostRedisplay();
+    glutSetWindow(window1);
+    glutPostRedisplay();
+    glutSetWindow(window2);
+    glutPostRedisplay();
 }
 void drawObj(){
     glPushMatrix();
 
-        /* glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, m_amb); */
-	    /* glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, m_diff); */
-	    /* glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, m_spec); */
-	    /* glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shiny); */
+    /* glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, m_amb); */
+    /* glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, m_diff); */
+    /* glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, m_spec); */
+    /* glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shiny); */
 
-        /* StdDraw.filledCircle(N/2.0 + 0.5, N/2.0 + 0.5, 0.375); */
-        //object's stating location and rotation
-        glRotatef(90, -1, 0, 0);
-        glTranslatef(size/2.0 + 6, 0, size/2.0 + 6);
+    /* StdDraw.filledCircle(N/2.0 + 0.5, N/2.0 + 0.5, 0.375); */
+    //object's stating location and rotation
+    glRotatef(90, -1, 0, 0);
+    glTranslatef(size/2.0 + 6, 0, size/2.0 + 6);
 
-        //Object's AI
+    //Object's AI
 
-		/* ghostLoadObj.mtlForObj(); */
-		ghostLoadObj.drawObj();
-	glPopMatrix();
+    /* ghostLoadObj.mtlForObj(); */
+    ghostLoadObj.drawObj();
+    glPopMatrix();
 }
 void motion(int mouseX, int mouseY){
 
 
 }
 void passive(int mouseX, int mouseY){
-			//SetCursorPos(0,0);
-			int mid_x = w/2;
-			int mid_y = h/2	;
-			float angleX =0.0f;
-			float angleY=0.0f;
+    //SetCursorPos(0,0);
+    int mid_x = w/2;
+    int mid_y = h/2	;
+    float angleX =0.0f;
+    float angleY=0.0f;
 
-			angleX = mouseX - mid_x;
- 			angleY =  mid_y - mouseY;
-	/*		if ((mid_x - mouseX) > 0 && oldMouseX > mouseX){		// mouse moved to the left
-				angleX -= 0.1f;
-			}
-			else if ((mid_x - mouseX) < 0 && oldMouseX < mouseX){	// mouse moved to the right
-				angleX += 0.1f;
-			}
-			if ((mid_y - mouseY) > 0){		// mouse moved to the up
-				angleY += 0.1f;
-			}
-			else if ((mid_y - mouseY) < 0){	// mouse moved to the down
-				angleY -= 0.1f;
-			}&*/
-			viewY = angleY;
-			viewX = angleX;
+    angleX = mouseX - mid_x;
+    angleY =  mid_y - mouseY;
+    viewY = angleY;
+    viewX = angleX;
 
-			oldMouseX = mouseX;
-			oldMouseY = mouseY;
-//	printf("passive: %i,%i\n", mouseX, mouseY);
+    oldMouseX = mouseX;
+    oldMouseY = mouseY;
+    //	printf("passive: %i,%i\n", mouseX, mouseY);
 
 }
 void mouse(int btn, int state, int mouseX, int mouseY){
-		//case WM_MOUSEMOVE:
-			// save old mouse coordinates
-			//oldMouseX = mouseX;
-			//oldMouseY = mouseY;
- 
-			// get mouse coordinates from Windows
-			//mouseX = LOWORD(lParam);
-			//mouseY = HIWORD(lParam);
- 
-			// these lines limit the camera's range
-			//if (mouseY < 60)
-			//	mouseY = 60;
-			//if (mouseY > 450)
-			//	mouseY = 450;
-/*			float angleX =0.0f;
-			float angleY=0.0f;
- 
-			if ((mouseX - oldMouseX) > 0){		// mouse moved to the right
-				angleX += 3.0f;
-			}
-			else if ((mouseX - oldMouseX) < 0){	// mouse moved to the left
-				angleX -= 3.0f;
-			}
-			if ((mouseY - oldMouseY) > 0){		// mouse moved to the right
-				angleY += 3.0f;
-			}
-			else if ((mouseY - oldMouseY) < 0){	// mouse moved to the left
-				angleY -= 3.0f;
-			}
-			viewY += angleY * 2;
-			viewX =+ angleX * 2;*/
-
-			//return 0;
-			//break;
-
-
 }
 
 void display(void)
 {
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     /* glClearColor(0.3, 0.3, 0.3, 0.1); */
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
 
     gluLookAt(camPos[0], camPos[1], camPos[2], 0,0,0, 0,1,0);
-	glColor3f(1,1,1);
+    glColor3f(1,1,1);
     /* fog(); */
 
-	//code for drawing the maze
-	//size = 20;
-	/* generateWalls(); */
-	mazeStarter();
-	generateMaze();
-	drawMesh();
-	drawPrize();
+    //code for drawing the maze
+    //size = 20;
+    /* generateWalls(); */
+    mazeStarter();
+    generateMaze();
+    drawMesh();
+    drawPrize();
     /* drawObj(); */
     /* if(checkWin()){ */
     /* } */
-	glutSwapBuffers();
+    glutSwapBuffers();
 }
 void display2()
 {
 
-	//size/2.0 + 6, 0, size/2.0 + 6
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
+    //size/2.0 + 6, 0, size/2.0 + 6
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
 
-	glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
+    glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
 
-	//fog();
-	light();
+    //fog();
+    light();
 
-	//glRotatef(45,0,1,0);
-	glRotatef(45+viewXOrigin,0,1,0);
-	gluLookAt(camPos2[0], camPos2[1], camPos2[2], viewX,viewY,0, 0,1,0);
-
-	//glPushMatrix();
-	//glTranslatef(-camPos2[0],-camPos2[1],-camPos2[2]);
-	//glRotatef(viewYOrigin,0,1,0);
-	//glTranslatef(camPos2[0],camPos2[1],camPos2[2]);
-	//glutPostRedisplay();
-	//glPopMatrix();
-	//glPushMatrix();
+    //glRotatef(45,0,1,0);
+    glRotatef(45+viewXOrigin,0,1,0);
+    gluLookAt(camPos2[0], camPos2[1], camPos2[2], viewX,viewY,0, 0,1,0);
 
 
-	//glPopMatrix();
-	//printf("The viewX angle is %f \n the viewY angle is %f \n", viewX, viewY);
-	glColor3f(1,1,1);
+    //printf("The viewX angle is %f \n the viewY angle is %f \n", viewX, viewY);
+    glColor3f(1,1,1);
 
 
-	//code for drawing the maze
-	size = 20;	
-	mazeStarter();
-	generateMaze();
-	drawMesh();
-	drawFloor();
+    //code for drawing the maze
+    size = 20;
+    mazeStarter();
+    generateMaze();
+    drawMesh();
+    drawFloor();
 
-	checkStatus();
-	drawPrize();
-	//drawObj();
-	glutSwapBuffers();
+    checkStatus();
+    drawPrize();
+    //drawObj();
+    glutSwapBuffers();
 }
 
 void glutCallBacks(){
-	glutDisplayFunc(display);	//registers "display" as the display callback function
-	glutKeyboardFunc(keyboard); //registers "keyboard" as the keyboard callback function
-	//glutSpecialFunc(special);	//registers "special" as the special function callback
-	glutIdleFunc(idle);
+    glutDisplayFunc(display);	//registers "display" as the display callback function
+    glutKeyboardFunc(keyboard); //registers "keyboard" as the keyboard callback function
+    //glutSpecialFunc(special);	//registers "special" as the special function callback
+    glutIdleFunc(idle);
 }
-	
+
 
 
 void glutCallBacks2(){
-	glutDisplayFunc(display2);	//registers "display" as the display callback function
-	glutSpecialFunc(special2);
-	glutMouseFunc(mouse);
-	glutMotionFunc(motion);
-	glutPassiveMotionFunc(passive);
-	glutKeyboardFunc(keyboard);
-	//glutSpecialFunc(special);
-	//initMenu();
+    glutDisplayFunc(display2);	//registers "display" as the display callback function
+    glutSpecialFunc(special2);
+    glutMouseFunc(mouse);
+    glutMotionFunc(motion);
+    glutPassiveMotionFunc(passive);
+    glutKeyboardFunc(keyboard);
+    //glutSpecialFunc(special);
+    //initMenu();
 
 }
 
 /* main function - program entry point */
 int main(int argc, char** argv)
 {
-	glutInit(&argc, argv);		//starts up GLUT
+    glutInit(&argc, argv);		//starts up GLUT
 
-	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
 
-	ghostLoadObj.loadObj("ghost", "ObjFile/");
+    ghostLoadObj.loadObj("ghost", "ObjFile/");
 
-	glutInitWindowSize(w, h);
-	glutInitWindowPosition(50, 50);
-	window1 = glutCreateWindow("Maze Top View");	//creates the window
-	glutCallBacks();
-	init();
+    glutInitWindowSize(w, h);
+    glutInitWindowPosition(50, 50);
+    window1 = glutCreateWindow("Maze Top View");	//creates the window
+    glutCallBacks();
+    init();
 
-	glutInitWindowSize(w,h);
-	glutInitWindowPosition(1000,100);
-	window2 = glutCreateWindow("Maze 1st Person");
-	glutCallBacks2();
-	init2();
+    glutInitWindowSize(w,h);
+    glutInitWindowPosition(1000,100);
+    window2 = glutCreateWindow("Maze 1st Person");
+    glutCallBacks2();
+    init2();
 
-	glEnable(GL_TEXTURE_2D);
-	glGenTextures(3, textures); //generate 3 texture IDs, store them in array "textures"
-	texture();
+    glEnable(GL_TEXTURE_2D);
+    glGenTextures(3, textures); //generate 3 texture IDs, store them in array "textures"
+    texture();
 
-	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 
-	glutMainLoop();				//starts the event loop
+    glutMainLoop();				//starts the event loop
 
-	return(0);					//return may not be necessary on all compilers
+    return(0);					//return may not be necessary on all compilers
 }
