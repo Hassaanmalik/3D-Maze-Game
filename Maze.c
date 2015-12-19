@@ -682,8 +682,8 @@ void init2(void){
     //light();
 }
 void idle(){
-    glutSetWindow(window1);
-    glutPostRedisplay();
+    /* glutSetWindow(window1); */
+    /* glutPostRedisplay(); */
     glutSetWindow(window2);
     glutPostRedisplay();
 }
@@ -859,11 +859,11 @@ int main(int argc, char** argv)
 
     ghostLoadObj.loadObj("ghost", "ObjFile/");
 
-    glutInitWindowSize(w, h);
-    glutInitWindowPosition(50, 50);
-    window1 = glutCreateWindow("Maze Top View");	//creates the window
-    glutCallBacks();
-    init();
+    /* glutInitWindowSize(w, h); */
+    /* glutInitWindowPosition(50, 50); */
+    /* window1 = glutCreateWindow("Maze Top View");	//creates the window */
+    /* glutCallBacks(); */
+    /* init(); */
 
     glutInitWindowSize(w,h);
     glutInitWindowPosition(1000,100);
