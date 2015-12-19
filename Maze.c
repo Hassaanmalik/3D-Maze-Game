@@ -88,11 +88,19 @@ float m_amb[] ={ 0.05375f, 0.05f, 0.06625f, 0.82f };
 float m_diff[] ={ 0.18275f, 0.17f, 0.22525f, 0.82f};
 float m_spec[] ={0.332741f, 0.328634f, 0.346435f, 0.82f };
 float shiny =38.4f ;
+
 //floor material
 float m_amb1[] ={0.0f, 0.0f, 0.0f, 1.0f };
 float m_diff1[] ={0.01f, 0.01f, 0.01f, 1.0f };
 float m_spec1[] ={0.50f, 0.50f, 0.50f, 1.0f };
 float shiny1 =32.0f ;
+
+
+//trophy material
+float m_amb2[] ={0.24725f, 0.1995f, 0.0745f, 1.0f };
+float m_diff2[] ={0.75164f, 0.60648f,0.60648f, 1.0f };
+float m_spec2[] ={0.628281, 0.555802f,0.366065f, 1.0f };
+float shiny2 =0.4f ;
 
 //an array for iamge data
 GLubyte* tex1;
@@ -449,8 +457,8 @@ void keyboard(unsigned char key, int x, int y){
 	}
 	glutPostRedisplay();
 }
-
-/*void special(int key, int x, int y)
+/*
+void special(int key, int x, int y)
 {	switch(key)
 	{
 		case GLUT_KEY_LEFT:
@@ -487,8 +495,8 @@ void keyboard(unsigned char key, int x, int y){
 
 	}
 	glutPostRedisplay();
-}*/
-
+}
+*/
 void special2(int key, int x, int y)
 {
 	float tempT = camPos2[0];
@@ -545,7 +553,7 @@ void special2(int key, int x, int y)
 				camPos2[2] += 1;
 			}
 			else{
-				//camPos2[2] -= 1;
+				camPos2[2] -= 1;
 			}
 			break;
 
@@ -554,7 +562,7 @@ void special2(int key, int x, int y)
 				camPos2[2] -= 1;
 			}
 			else{
-				//camPos2[2] += 1;
+				camPos2[2] += 1;
 			}
 			break;
 
@@ -572,7 +580,7 @@ void special2(int key, int x, int y)
 				camPos2[0] += 1;
 			}
 			else{
-				//camPos2[0] -= 1;
+				camPos2[0] -= 1;
 			}
 			break;
 
@@ -643,6 +651,13 @@ void drawPrize(){
 	// turn off fog for that one object
 	glDisable(GL_FOG);
 
+	glPushMatrix();
+	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, m_amb2);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, m_diff2);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, m_spec2);
+	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shiny2);
+
+
 	// move to that position in the maze
 	glTranslatef(px+4,py+3,pz+4);
 	glRotatef(90,1,0,0);
@@ -652,6 +667,8 @@ void drawPrize(){
 	gluCylinder(quadratic,1,0.5, 1, 40,5);		// draw cup
 	glTranslatef(0,0,2); 						// move to the bottom
 	glutSolidTorus(0.1,0.4,30, 30); 			// draw base
+
+	glPopMatrix();
 }
 
 void checkStatus(){
@@ -711,7 +728,7 @@ void fog(){
     glFogi(GL_FOG_MODE, GL_EXP);
     glFogf(GL_FOG_START, 45.0f);
     glFogf(GL_FOG_END, 1000.0f);
-    glFogf (GL_FOG_DENSITY, 0.05);
+    glFogf (GL_FOG_DENSITY, 0.15);
     glHint(GL_FOG_HINT,GL_FASTEST);
 	}
 }
