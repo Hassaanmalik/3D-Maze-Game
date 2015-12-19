@@ -23,7 +23,7 @@ LoadObj ghostLoadObj;
 
 float camPos[] = {100, 200, 100};
 
-
+int test=0;
 
 //setting the window height and width
 const float w = 800;
@@ -36,6 +36,13 @@ int px = 78;
 int py = 5;
 int pz = 78;
 
+bool northPlayer = true;
+bool eastPlayer = false;
+bool westPlayer = false;
+bool southPlayer = false;
+
+int viewXOrigin = 0;
+int viewYOrigin = 0;
 
 
 GLfloat light_pos[] = {60,100.0,60,1.0};
@@ -48,11 +55,11 @@ bool east[22][22];
 bool west[22][22];
 bool visited[22][22];
 
-float playerX = size/2.0 * 6;
+float playerX = size/2.0 * 6 + 0.5;
 float playerY = 2;
-float playerZ = size/2.0 * 6;
+float playerZ = size/2.0 * 6 + 0.5;
 float camPos2[] = {playerX,playerY,playerZ};
-
+//float camPos2[] = {0,0,0};
 int oldMouseX;
 int oldMouseY;
 
@@ -549,38 +556,95 @@ void special2(int key, int x, int y)
 			break;*/
 
 		case GLUT_KEY_UP:
-			if(hitTest(camPos2[0],camPos2[2])){
-				camPos2[2] += 1;
-			}
-			else{
+			//if(hitTest(camPos2[0],camPos2[2])){
+				if(northPlayer){
 				camPos2[2] -= 1;
-			}
+				}
+				else if(southPlayer){
+					camPos2[2] +=1;
+				}
+				else if(eastPlayer){
+					camPos2[0] +=1; 
+				}
+				else if(westPlayer){
+					camPos2[0] -=1;
+				}
+			//}
+			//else{
+			//	camPos2[2] -= 1;
+			//}
 			break;
 
 		case GLUT_KEY_DOWN:
-			if(hitTest(camPos2[0],camPos2[2])){
-				camPos2[2] -= 1;
-			}
-			else{
+			//if(hitTest(camPos2[0],camPos2[2])){
+				if(northPlayer){
 				camPos2[2] += 1;
-			}
+				}
+				else if(southPlayer){
+					camPos2[2] -=1;
+				}
+				else if(eastPlayer){
+					camPos2[0] -=1; 
+				}
+				else if(westPlayer){
+					camPos2[0] +=1;
+				}
+			//}
+			//else{
+			//	camPos2[2] += 1;
+			//}
 			break;
 
 		case GLUT_KEY_LEFT:
-			if(hitTest(camPos2[0],camPos2[2])){
-				camPos2[0] -= 1;
+			viewXOrigin -= 90;
+			if(northPlayer){
+				westPlayer = true;
+				northPlayer = false;
 			}
-			else{
-				camPos2[0] += 1;
+			else if(westPlayer){
+				southPlayer = true;
+				westPlayer = false;
 			}
+			else if(southPlayer){
+				eastPlayer = true;
+				southPlayer = false;
+			}
+			else if(eastPlayer){
+				northPlayer = true;
+				eastPlayer = false;
+			}
+
+
+				//glTranslatef(-camPos2[0],-camPos2[1],-camPos2[2]);
+				//glRotatef(25,1,0,0);
+				//glRotatef(45,0,1,0);
+				//glTranslatef(-camPos2[0],-camPos2[1],-camPos2[2]);
+
+				//glTranslatef(camPos2[0],camPos2[1],camPos2[2]);
+				//
+		//test += 5;
+				//glRotatef(90,0,0,1);
+				//viewXOrigin -= 90;
+
 			break;
 
 		case GLUT_KEY_RIGHT:
-			if(hitTest(camPos2[0],camPos2[2])){
-				camPos2[0] += 1;
+			viewXOrigin += 90;
+			if(northPlayer){
+				eastPlayer = true;
+				northPlayer = false;
 			}
-			else{
-				camPos2[0] -= 1;
+			else if(eastPlayer){
+				southPlayer = true;
+				eastPlayer = false;
+			}
+			else if(southPlayer){
+				westPlayer = true;
+				southPlayer = false;
+			}
+			else if(westPlayer){
+				northPlayer = true;
+				westPlayer = false;
 			}
 			break;
 
@@ -750,7 +814,8 @@ void init2(void){
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	gluPerspective(45, 1, 1, 1000);
+	gluPerspective(45, 2, 1, 1000);
+	//glRotatef(45,camPos2[0],camPos2[1],camPos2[2]);
 	//light();
 }
 void idle(){
@@ -788,8 +853,10 @@ void passive(int mouseX, int mouseY){
 			int mid_y = h/2	;
 			float angleX =0.0f;
 			float angleY=0.0f;
- 
-			if ((mid_x - mouseX) > 0 && oldMouseX > mouseX){		// mouse moved to the left
+
+			angleX = mouseX - mid_x;
+ 			angleY =  mid_y - mouseY;
+	/*		if ((mid_x - mouseX) > 0 && oldMouseX > mouseX){		// mouse moved to the left
 				angleX -= 0.1f;
 			}
 			else if ((mid_x - mouseX) < 0 && oldMouseX < mouseX){	// mouse moved to the right
@@ -800,9 +867,9 @@ void passive(int mouseX, int mouseY){
 			}
 			else if ((mid_y - mouseY) < 0){	// mouse moved to the down
 				angleY -= 0.1f;
-			}
-			viewY += angleY * 2;
-			viewX += angleX * 2;
+			}&*/
+			viewY = angleY;
+			viewX = angleX;
 
 			oldMouseX = mouseX;
 			oldMouseY = mouseY;
@@ -881,15 +948,29 @@ void display2()
 
 	glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
 
-	fog();
+	//fog();
 	light();
+
+	//glRotatef(45,0,1,0);
+	glRotatef(45+viewXOrigin,0,1,0);
 	gluLookAt(camPos2[0], camPos2[1], camPos2[2], viewX,viewY,0, 0,1,0);
+
+	//glPushMatrix();
+	//glTranslatef(-camPos2[0],-camPos2[1],-camPos2[2]);
+	//glRotatef(viewYOrigin,0,1,0);
+	//glTranslatef(camPos2[0],camPos2[1],camPos2[2]);
+	//glutPostRedisplay();
+	//glPopMatrix();
+	//glPushMatrix();
+
+
+	//glPopMatrix();
 	//printf("The viewX angle is %f \n the viewY angle is %f \n", viewX, viewY);
 	glColor3f(1,1,1);
 
 
 	//code for drawing the maze
-	size = 20;
+	size = 20;	
 	mazeStarter();
 	generateMaze();
 	drawMesh();
@@ -907,7 +988,7 @@ void glutCallBacks(){
 	//glutSpecialFunc(special);	//registers "special" as the special function callback
 	glutIdleFunc(idle);
 }
-
+	
 
 
 void glutCallBacks2(){
