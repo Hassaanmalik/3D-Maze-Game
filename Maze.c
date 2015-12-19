@@ -132,117 +132,117 @@ int width, height, max;
 
 GLubyte* LoadPPM(char* file, int* width, int* height, int* max)
 {
-	GLubyte* img;
-	FILE *fd;
-	int n, m;
-	int  k, nm;
-	char c;
-	int i;
-	char b[100];
-	float s;
-	int red, green, blue;
+    GLubyte* img;
+    FILE *fd;
+    int n, m;
+    int  k, nm;
+    char c;
+    int i;
+    char b[100];
+    float s;
+    int red, green, blue;
 
-	fd = fopen(file, "r");
-	fscanf(fd,"%[^\n] ",b);
-	if(b[0]!='P'|| b[1] != '3')
-	{
-		printf("%s is not a PPM file!\n",file);
-		exit(0);
-	}
-	printf("%s is a PPM file\n", file);
-	fscanf(fd, "%c",&c);
-	while(c == '#')
-	{
-		fscanf(fd, "%[^\n] ", b);
-		printf("%s\n",b);
-		fscanf(fd, "%c",&c);
-	}
-	ungetc(c,fd);
-	fscanf(fd, "%d %d %d", &n, &m, &k);
+    fd = fopen(file, "r");
+    fscanf(fd,"%[^\n] ",b);
+    if(b[0]!='P'|| b[1] != '3')
+    {
+        printf("%s is not a PPM file!\n",file);
+        exit(0);
+    }
+    printf("%s is a PPM file\n", file);
+    fscanf(fd, "%c",&c);
+    while(c == '#')
+    {
+        fscanf(fd, "%[^\n] ", b);
+        printf("%s\n",b);
+        fscanf(fd, "%c",&c);
+    }
+    ungetc(c,fd);
+    fscanf(fd, "%d %d %d", &n, &m, &k);
 
-	printf("%d rows  %d columns  max value= %d\n",n,m,k);
+    printf("%d rows  %d columns  max value= %d\n",n,m,k);
 
-	nm = n*m;
+    nm = n*m;
 
-	img = (GLubyte*)(malloc(3*sizeof(GLuint)*nm));
+    img = (GLubyte*)(malloc(3*sizeof(GLuint)*nm));
 
-	s=255.0/k;
+    s=255.0/k;
 
 
-	for(i=0;i<nm;i++)
-	{
-		fscanf(fd,"%d %d %d",&red, &green, &blue );
-		img[3*nm-3*i-3]=red*s;
-		img[3*nm-3*i-2]=green*s;
-		img[3*nm-3*i-1]=blue*s;
-	}
+    for(i=0;i<nm;i++)
+    {
+        fscanf(fd,"%d %d %d",&red, &green, &blue );
+        img[3*nm-3*i-3]=red*s;
+        img[3*nm-3*i-2]=green*s;
+        img[3*nm-3*i-1]=blue*s;
+    }
 
-	*width = n;
-	*height = m;
-	*max = k;
+    *width = n;
+    *height = m;
+    *max = k;
 
-	return img;
+    return img;
 }
 
 void texture(){
-	tex1 = LoadPPM("bricks.ppm", &width, &height, &max);
-	glBindTexture(GL_TEXTURE_2D, textures[0]); //Stores the texture at the array location 0
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); //Sets up needed texture properites
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, tex1); //Instantiates the texture
+    tex1 = LoadPPM("bricks.ppm", &width, &height, &max);
+    glBindTexture(GL_TEXTURE_2D, textures[0]); //Stores the texture at the array location 0
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); //Sets up needed texture properites
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, tex1); //Instantiates the texture
 
-	tex2 = LoadPPM("wood256.ppm", &width, &height, &max);
-	glBindTexture(GL_TEXTURE_2D, textures[1]); //Stores the texture at the array location 1
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); //Sets up needed texture properties
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, tex2); //Instantiates the texture
+    tex2 = LoadPPM("wood256.ppm", &width, &height, &max);
+    glBindTexture(GL_TEXTURE_2D, textures[1]); //Stores the texture at the array location 1
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); //Sets up needed texture properties
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, tex2); //Instantiates the texture
 
-	tex3 = LoadPPM("interface.ppm", &width, &height, &max);
-	glBindTexture(GL_TEXTURE_2D, textures[2]); //Stores the texture at the array location 2
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); //Sets up needed texture properties
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, tex3); //Instantiates the texture
+    tex3 = LoadPPM("interface.ppm", &width, &height, &max);
+    glBindTexture(GL_TEXTURE_2D, textures[2]); //Stores the texture at the array location 2
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); //Sets up needed texture properties
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, tex3); //Instantiates the texture
 }
 
 void mazeStarter(){
-	if(calcMode==true){
-		//this first 2 loops set the borders as already visited
-		//so that the algorithm doesnt touch these
-		for(int x = 0; x< size+2; x++){
-			visited[x][0] = true;
-			visited[x][size+1] = true;
-		}
-		for(int z =0; z<size +2; z++){
-			visited[0][z] = true;
-			visited[size+1][z] = true;
-		}
+    if(calcMode==true){
+        //this first 2 loops set the borders as already visited
+        //so that the algorithm doesnt touch these
+        for(int x = 0; x< size+2; x++){
+            visited[x][0] = true;
+            visited[x][size+1] = true;
+        }
+        for(int z =0; z<size +2; z++){
+            visited[0][z] = true;
+            visited[size+1][z] = true;
+        }
 
-		//initialize all the walls
-		for(int x=0; x< size+2;x++){
-			for (int z=0; z<size+2;z++){
-				north[x][z] = true;
-				south[x][z] = true;
-				east[x][z] = true;
-				west[x][z] = true;
-			}
-		}
-	}
+        //initialize all the walls
+        for(int x=0; x< size+2;x++){
+            for (int z=0; z<size+2;z++){
+                north[x][z] = true;
+                south[x][z] = true;
+                east[x][z] = true;
+                west[x][z] = true;
+            }
+        }
+    }
 }
 
 void runMazeAlg(int x, int z){
-	visited[x][z] = true;
+    visited[x][z] = true;
 
-	//this runs through the the unvisted neighbors
-	while(!(visited[x][z+1]) || !(visited[x+1][z]) || !(visited[x][z-1]) || !(visited[x-1][z])){
-		while (true){
-			// get random neighbor
-			int r = rand()%4;
+    //this runs through the the unvisted neighbors
+    while(!(visited[x][z+1]) || !(visited[x+1][z]) || !(visited[x][z-1]) || !(visited[x-1][z])){
+        while (true){
+            // get random neighbor
+            int r = rand()%4;
             if (r == 0 && !visited[x][z+1]) {
                 north[x][z] = false;
                 south[x][z+1] = false;
@@ -261,60 +261,60 @@ void runMazeAlg(int x, int z){
                 runMazeAlg(x, z-1);
                 break;
             }
-			else if (r == 3 && !visited[x-1][z]) {
+            else if (r == 3 && !visited[x-1][z]) {
                 west[x][z] = false;
                 east[x-1][z] = false;
                 runMazeAlg(x-1, z);
                 break;
             }
-		}
-	}
+        }
+    }
 }
 //starts making the maze
 void generateMaze(){
-	if(calcMode==true){
-		runMazeAlg(1,1);
-	}
-	calcMode=false;
+    if(calcMode==true){
+        runMazeAlg(1,1);
+    }
+    calcMode=false;
 }
 
 // draws the cube for each point which has a wall
 void drawCube (int x, int z, int c, int d){
-	// the vertices as computed from the x and z coordinates
-	int verts [8][3] = {{x,0,z},{x,10,z},{x+halfN+c,10,z},{x+halfN+c,0,z},{x,0,z+halfN+d},{x,10,z+halfN+d},{x+halfN+c,10,z+halfN+d},{x+halfN+c,0,z+halfN+d}};
-	//for each face
-	int vIndex;
+    // the vertices as computed from the x and z coordinates
+    int verts [8][3] = {{x,0,z},{x,10,z},{x+halfN+c,10,z},{x+halfN+c,0,z},{x,0,z+halfN+d},{x,10,z+halfN+d},{x+halfN+c,10,z+halfN+d},{x+halfN+c,0,z+halfN+d}};
+    //for each face
+    int vIndex;
 
-	glPushMatrix();
-	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, m_amb);
-	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, m_diff);
-	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, m_spec);
-	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shiny);
+    glPushMatrix();
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, m_amb);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, m_diff);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, m_spec);
+    glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shiny);
 
-	for (int index = 0; index < 6; index ++){
-		glBindTexture(GL_TEXTURE_2D, textures[0]);
-		glBegin(GL_POLYGON);
-			// for each four corners of a face
-		//	for(int i = 0; i < 4; i++){
-				vIndex = indices[index][0];
-				glTexCoord2f(0,1);
-				glVertex3f(verts[vIndex][0],verts[vIndex][1], verts[vIndex][2]);
+    for (int index = 0; index < 6; index ++){
+        glBindTexture(GL_TEXTURE_2D, textures[0]);
+        glBegin(GL_POLYGON);
+        // for each four corners of a face
+        //	for(int i = 0; i < 4; i++){
+        vIndex = indices[index][0];
+        glTexCoord2f(0,1);
+        glVertex3f(verts[vIndex][0],verts[vIndex][1], verts[vIndex][2]);
 
-				vIndex = indices[index][1];
-				glTexCoord2f(0,0);
-				glVertex3f(verts[vIndex][0],verts[vIndex][1], verts[vIndex][2]);
+        vIndex = indices[index][1];
+        glTexCoord2f(0,0);
+        glVertex3f(verts[vIndex][0],verts[vIndex][1], verts[vIndex][2]);
 
-				vIndex = indices[index][2];
-				glTexCoord2f(1,0);
-				glVertex3f(verts[vIndex][0],verts[vIndex][1], verts[vIndex][2]);
+        vIndex = indices[index][2];
+        glTexCoord2f(1,0);
+        glVertex3f(verts[vIndex][0],verts[vIndex][1], verts[vIndex][2]);
 
-				vIndex = indices[index][3];
-				glTexCoord2f(1,1);
-				glVertex3f(verts[vIndex][0],verts[vIndex][1], verts[vIndex][2]);
-		//	}
-		glEnd();
-	}
-	glPopMatrix();
+        vIndex = indices[index][3];
+        glTexCoord2f(1,1);
+        glVertex3f(verts[vIndex][0],verts[vIndex][1], verts[vIndex][2]);
+        //	}
+        glEnd();
+    }
+    glPopMatrix();
 }
 
 
@@ -322,161 +322,116 @@ bool prize = false;
 //draws the grid
 void drawMesh(){
 
-	// mulitples of four to allow for more spacing; can be adjusted by changing n
-	for(int x = n; x<=size*n;x+=n){
-		for(int z=n; z<=size*n;z+=n){
-			if (south[x/n][z/n]){
-				drawCube(x,z,halfN,-1);
+    // mulitples of four to allow for more spacing; can be adjusted by changing n
+    for(int x = n; x<=size*n;x+=n){
+        for(int z=n; z<=size*n;z+=n){
+            if (south[x/n][z/n]){
+                drawCube(x,z,halfN,-1);
 
-			}
-		 	if(north[x/n][z/n]){
-				drawCube(x,z+n,halfN,-1);
-			}
-			if (west[x/n][z/n]){
-				drawCube(x,z,-1,halfN);
-			}
-			if ((east[x/n][z/n] || x == size*n)){
-				drawCube(x+n,z,-1,halfN);
-			}
-		}
-	}
+            }
+            if(north[x/n][z/n]){
+                drawCube(x,z+n,halfN,-1);
+            }
+            if (west[x/n][z/n]){
+                drawCube(x,z,-1,halfN);
+            }
+            if ((east[x/n][z/n] || x == size*n)){
+                drawCube(x+n,z,-1,halfN);
+            }
+        }
+    }
 }
 
 
 void cleanArrays(){
-	//reset all the arrays
-	for(int x=0; x< size+2;x++){
-		for (int z=0; z<size+2;z++){
-			north[x][z] = false;
-			south[x][z] = false;
-			east[x][z] = false;
-			west[x][z] = false;
-			visited[x][z] = false;
-		}
-	}
+    //reset all the arrays
+    for(int x=0; x< size+2;x++){
+        for (int z=0; z<size+2;z++){
+            north[x][z] = false;
+            south[x][z] = false;
+            east[x][z] = false;
+            west[x][z] = false;
+            visited[x][z] = false;
+        }
+    }
 }
 
 void drawFloor(){
-	glPushMatrix();
-	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, m_amb1);
-	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, m_diff1);
-	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, m_spec1);
-	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shiny1);
+    glPushMatrix();
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, m_amb1);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, m_diff1);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, m_spec1);
+    glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shiny1);
 
-	glBindTexture(GL_TEXTURE_2D, textures[1]);
+    glBindTexture(GL_TEXTURE_2D, textures[1]);
 
-	glBegin(GL_POLYGON);
+    glBegin(GL_POLYGON);
 
-		glTexCoord2f(0,1);
-		glVertex3f(n,0,n);
+    glTexCoord2f(0,1);
+    glVertex3f(n,0,n);
 
-		glTexCoord2f(0,0);
-		glVertex3f(n,0,size*n+n);
+    glTexCoord2f(0,0);
+    glVertex3f(n,0,size*n+n);
 
-		glTexCoord2f(1,0);
-		glVertex3f(size*n+n,0,size*n+n);
+    glTexCoord2f(1,0);
+    glVertex3f(size*n+n,0,size*n+n);
 
-		glTexCoord2f(1,1);
-		glVertex3f(size*n+n,0,n);
-	glEnd();
-	glPopMatrix();
+    glTexCoord2f(1,1);
+    glVertex3f(size*n+n,0,n);
+    glEnd();
+    glPopMatrix();
 }
 
-/*bool checkValidMove(int projectedX, int projectedZ){
-	for(int j = 0; j <= 5; j ++){
-	printf("x0: %i x1 %i x2 %i x3 %i \n y0: %i y1 %i y2 %i y3 %i \n",TrevorsCheatArray[j][0][0],TrevorsCheatArray[j][1][0],TrevorsCheatArray[j][2][0],TrevorsCheatArray[j][3][0],TrevorsCheatArray[j][1][0],TrevorsCheatArray[j][1][1],TrevorsCheatArray[j][2][1],TrevorsCheatArray[j][3][1]);
-
-		//for(int i = 0; i < 4; i++){
-		//printf("projectedX values is %i \n projected Z is %i \n", projectedX, projectedZ);
-			if(projectedX >= TrevorsCheatArray[j][0][0] && projectedX <= TrevorsCheatArray[j][3][0]){
-				if(projectedZ >= TrevorsCheatArray[j][0][1] && projectedZ <= TrevorsCheatArray[j][3][1]){
-					//printf("true");
-					//printf(" Wall Number : % i     X Range: %i min %i max Zrange: %i min %i Max  \n", j,TrevorsCheatArray[j][0][0],TrevorsCheatArray[j][3][0],TrevorsCheatArray[j][0][1],TrevorsCheatArray[j][3][1]);
-					return false;
-
-				}
-			}
-			if(projectedZ >= TrevorsCheatArray[j][0][1] && projectedZ <= TrevorsCheatArray[j][3][1]){
-				return false;
-			}
-			//if(TrevorsCheatArray[j][i][0]==projectedX || TrevorsCheatArray[j][i][1]==projectedZ){
-			//	return false;
-				//printf("SHUT UP NAVLEEN");
-				//projectedX = camPos2[0];
-			//}
-			//else{
-			//	camPos2[0]=projectedX;
-				//printf("SHUT UP NAVLEEN");
-
-			//}
-
-			//if(TrevorsCheatArray[j][i][1]==projectedZ){
-				//printf("I FUCKEN KNOW THAT");
-			//	return false;
-			//	projectedZ = camPos2[2];
-			//}
-			//else{
-			//	camPos2[2]=projectedZ;
-			//}
-
-		//}
-
-	}
-	return true;
-	//glutPostRedisplay();
-
-}*/
-
 bool hitTest(float x, float z){
-	printf("x: %f,z: %f\n",x,z);
-	int i = ceil(x/6)*6;
-	int j = ceil(z/6)*6;
-	printf("i: %i,j: %i\n",i,j);
-	//||south[i][j]||east[i][j]||west[i][j]
-	if(i ==n ||j==n || i == size*n || j==size*n){
-		printf("border false\n");
-		return false;
-	}
-	if(north[i][j]){
-		printf("north false\n");
-		return false;
-	}
-	if(south[i][j]){
-		printf("south false\n");
-		return false;
-	}
-	if(west[i][j]){
-		printf("west false\n");
-		return false;
-	}
-	if(east[i][j]|| i == size*n){
-		printf("east false\n");
-		return false;
-	}
-		printf("true\n");
-	return true;
+    printf("x: %f,z: %f\n",x,z);
+    int i = ceil(x/6)*6;
+    int j = ceil(z/6)*6;
+    printf("i: %i,j: %i\n",i,j);
+    //||south[i][j]||east[i][j]||west[i][j]
+    if(i ==n ||j==n || i == size*n || j==size*n){
+        printf("border false\n");
+        return false;
+    }
+    if(north[i][j]){
+        printf("north false\n");
+        return false;
+    }
+    if(south[i][j]){
+        printf("south false\n");
+        return false;
+    }
+    if(west[i][j]){
+        printf("west false\n");
+        return false;
+    }
+    if(east[i][j]|| i == size*n){
+        printf("east false\n");
+        return false;
+    }
+    printf("true\n");
+    return true;
 }
 void keyboard(unsigned char key, int x, int y){
 
-	switch (key){
+    switch (key){
 
-		case 'q'://quit the program
-		case 27:
-			exit (0);
-			break;
-		case 'r':
-			calcMode = true;
-			cleanArrays();
-			break;
-	}
-	glutPostRedisplay();
+        case 'q'://quit the program
+        case 27:
+            exit (0);
+            break;
+        case 'r':
+            calcMode = true;
+            cleanArrays();
+            break;
+    }
+    glutPostRedisplay();
 }
 void special2(int key, int x, int y)
 {
-	float tempT = camPos2[0];
+    float tempT = camPos2[0];
 
-	/* arrow key presses move the camera */
-	switch(key)
+    /* arrow key presses move the camera */
+    switch(key)
     {
         case GLUT_KEY_UP:
             //if(hitTest(camPos2[0],camPos2[2])){
@@ -903,11 +858,11 @@ int main(int argc, char** argv)
 
     ghostLoadObj.loadObj("ghost", "ObjFile/");
 
-    glutInitWindowSize(w, h);
-    glutInitWindowPosition(50, 50);
-    window1 = glutCreateWindow("Maze Top View");	//creates the window
-    glutCallBacks();
-    init();
+    /* glutInitWindowSize(w, h); */
+    /* glutInitWindowPosition(50, 50); */
+    /* window1 = glutCreateWindow("Maze Top View");	//creates the window */
+    /* glutCallBacks(); */
+    /* init(); */
 
     glutInitWindowSize(w,h);
     glutInitWindowPosition(1000,100);
