@@ -32,10 +32,10 @@ const float wMid = w/2;
 const float hMid = h/2;
 
 // coordinates for the prize
-int px = 78;
+int px = 13;
 int py = 5;
-int pz = 78;
-
+int pz = 8;
+// for easy do (83, 0, 78)
 bool northPlayer = true;
 bool eastPlayer = false;
 bool westPlayer = false;
@@ -572,7 +572,11 @@ void showWin(const char *text, int length, int x, int y){
 }
 
 bool checkWin(){
-    if (camPos2[0] == px && camPos[2]==pz){
+	int i = (int)camPos2[0];
+	int j = (int)camPos2[2];
+	//printf ("px: %i, cam %i\n", px, i);
+	//printf ("pz: %i, cam %i\n", pz, j);
+   	if (px-1 <=i && i >= px +1 && pz  == j){
         std::string text;
         text = "You Won!";
         showWin(text.data(), text.size(), 300,350);
@@ -605,7 +609,7 @@ void drawPrize(){
 
 
     // move to that position in the maze
-    glTranslatef(px+4,py+3,pz+4);
+    glTranslatef(px+4,2,pz+4);
     glRotatef(90,1,0,0);
     glutSolidCone(1,1,20,20);
     GLUquadricObj *quadratic= gluNewQuadric();
@@ -620,7 +624,8 @@ void drawPrize(){
 void checkStatus(){
     // if win; need to fix this code so it will exit upon a win condition (ie Trevor?)
     if(checkWin()){
-        exit(1);
+      //  exit(1);
+    	printf("win\n");
     }
     if(checkLose()){
         exit(1);
