@@ -55,9 +55,9 @@ bool east[22][22];
 bool west[22][22];
 bool visited[22][22];
 
-float playerX = size/2.0 * 6 + 0.5;
+float playerX = 82;
 float playerY = 2;
-float playerZ = size/2.0 * 6 + 0.5;
+float playerZ = 82;
 float camPos2[] = {playerX,playerY,playerZ};
 //float camPos2[] = {0,0,0};
 
@@ -382,34 +382,28 @@ void drawFloor(){
     glPopMatrix();
 }
 
-bool hitTest(float x, float z){
-    printf("x: %f,z: %f\n",x,z);
-    int i = ceil(x/6)*6;
-    int j = ceil(z/6)*6;
-    printf("i: %i,j: %i\n",i,j);
-    //||south[i][j]||east[i][j]||west[i][j]
-    if(i ==n ||j==n || i == size*n || j==size*n){
-        printf("border false\n");
-        return false;
+bool hitTest(float cX, float cZ, float pX, float pZ){
+    printf("cX: %f, cZ: %f, pX: %f, pZ: %f\n", cX, cZ, pX, pZ);
+    int i = floor(cX/6);
+    int j = floor(cZ/6);
+    printf("i: %i,j: %i, ",i,j);
+    printf("north: %d, ", north[i][j]);
+    printf("south: %d, ", south[i][j]);
+    printf("east: %d, ", east[i][j]);
+    printf("west: %d\n", west[i][j]);
+    if(pZ > cZ){//North for camera and North for maze
+        printf("North\n");
+        return north[i][j];
+    }else if(pZ < cZ){//South for camera and South for maze
+        printf("South\n");
+        return south[i][j];
+    }else if(pX > cX){//East for camera and East for maze
+        printf("East\n");
+        return east[i][j];
+    }else if(pX < cX){//West for camera and West for maze
+        printf("West\n");
+        return west[i][j];
     }
-    if(north[i][j]){
-        printf("north false\n");
-        return false;
-    }
-    if(south[i][j]){
-        printf("south false\n");
-        return false;
-    }
-    if(west[i][j]){
-        printf("west false\n");
-        return false;
-    }
-    if(east[i][j]|| i == size*n){
-        printf("east false\n");
-        return false;
-    }
-    printf("true\n");
-    return true;
 }
 void keyboard(unsigned char key, int x, int y){
 
@@ -428,26 +422,24 @@ void keyboard(unsigned char key, int x, int y){
 }
 void special2(int key, int x, int y)
 {
-    float tempT = camPos2[0];
-
     /* arrow key presses move the camera */
     switch(key)
     {
         case GLUT_KEY_UP:
             //if(hitTest(camPos2[0],camPos2[2])){
-            if(northPlayer){
-                camPos2[2] -= 1;
-                light_pos[2] -= 1;
+            if(northPlayer && !hitTest(camPos2[0], camPos2[2], camPos2[0], camPos2[2]-1)){
+                camPos2[2] -=1;
+                light_pos[2] -=1;
             }
-            else if(southPlayer){
+            else if(southPlayer && !hitTest(camPos2[0], camPos2[2], camPos2[0], camPos2[2]+1)){
                 camPos2[2] +=1;
                 light_pos[2] +=1;
             }
-            else if(eastPlayer){
+            else if(eastPlayer && !hitTest(camPos2[0], camPos2[2], camPos2[0]+1, camPos2[2])){
                 camPos2[0] +=1;
-                light_pos[0] += 1;
+                light_pos[0] +=1;
             }
-            else if(westPlayer){
+            else if(westPlayer && !hitTest(camPos2[0], camPos2[2], camPos2[0]-1, camPos2[2])){
                 light_pos[0] -=1;
                 camPos2[0] -=1;
             }
@@ -459,22 +451,39 @@ void special2(int key, int x, int y)
 
         case GLUT_KEY_DOWN:
             //if(hitTest(camPos2[0],camPos2[2])){
-            if(northPlayer){
+            /* if(northPlayer){ */
+            /*     camPos2[2] += 1; */
+            /*     light_pos[2] += 1; */
+            /* } */
+            /* else if(southPlayer){ */
+            /*     camPos2[2] -=1; */
+            /*     light_pos[2] +=1; */
+            /* } */
+            /* else if(eastPlayer){ */
+            /*     camPos2[0] -= 1; */
+            /*     light_pos[0] -= 1; */
+            /* } */
+            /* else if(westPlayer){ */
+            /*     camPos2[0] +=1; */
+            /*     light_pos[0] +=1; */
+            /* } */
+            if(northPlayer && !hitTest(camPos2[0], camPos2[2], camPos2[0], camPos2[2]+1)){
                 camPos2[2] += 1;
                 light_pos[2] += 1;
             }
-            else if(southPlayer){
+            else if(southPlayer && !hitTest(camPos2[0], camPos2[2], camPos2[0], camPos2[2]-1)){
                 camPos2[2] -=1;
                 light_pos[2] +=1;
             }
-            else if(eastPlayer){
+            else if(eastPlayer && !hitTest(camPos2[0], camPos2[2], camPos2[0]-1, camPos2[2])){
                 camPos2[0] -= 1;
                 light_pos[0] -= 1;
             }
-            else if(westPlayer){
+            else if(westPlayer && !hitTest(camPos2[0], camPos2[2], camPos2[0]+1, camPos2[2])){
                 camPos2[0] +=1;
                 light_pos[0] +=1;
             }
+
             //}
             //else{
             //	camPos2[2] += 1;
@@ -689,38 +698,38 @@ void idle(){
 }
 
 void ghostAI(int ghost){
-    //Check wall colision
-    if(ghosteye[ghost] == "north")//90
-        ghostX[ghost]+=0.01;
-    else if(ghosteye[ghost] == "south")//270
-        ghostX[ghost]-=0.01;
-    else if(ghosteye[ghost] == "east")//0
-        ghostZ[ghost]+=0.01;
-    else if(ghosteye[ghost] == "west")//180
-        ghostZ[ghost]-=0.01;
+    /* //Check wall colision */
+    /* if(ghosteye[ghost] == "north")//90 */
+    /*     ghostX[ghost]+=0.01; */
+    /* else if(ghosteye[ghost] == "south")//270 */
+    /*     ghostX[ghost]-=0.01; */
+    /* else if(ghosteye[ghost] == "east")//0 */
+    /*     ghostZ[ghost]+=0.01; */
+    /* else if(ghosteye[ghost] == "west")//180 */
+    /*     ghostZ[ghost]-=0.01; */
 
-    if(hitTest(ghostX[ghost], ghostZ[ghost])){
-        if(ghost == 1){
-            ghostAngle[ghost] ++;
-        }else if(ghost == 2){
-            ghostAngle[ghost] --;
-        }else if(ghost == 3){
-            //Follow player
-        }
-    }
+    /* if(hitTest(ghostX[ghost], ghostZ[ghost])){ */
+    /*     if(ghost == 1){ */
+    /*         ghostAngle[ghost] ++; */
+    /*     }else if(ghost == 2){ */
+    /*         ghostAngle[ghost] --; */
+    /*     }else if(ghost == 3){ */
+    /*         //Follow player */
+    /*     } */
+    /* } */
 
-    if(ghostAngle[ghost]%4 == 1)
-        ghosteye[ghost] = "north";
-    else if(ghostAngle[ghost]%4 == 3)
-        ghosteye[ghost] = "south";
-    else if(ghostAngle[ghost]%4 == 0)
-        ghosteye[ghost] = "east";
-    else if(ghostAngle[ghost]%4 == 2)
-        ghosteye[ghost] = "west";
+    /* if(ghostAngle[ghost]%4 == 1) */
+    /*     ghosteye[ghost] = "north"; */
+    /* else if(ghostAngle[ghost]%4 == 3) */
+    /*     ghosteye[ghost] = "south"; */
+    /* else if(ghostAngle[ghost]%4 == 0) */
+    /*     ghosteye[ghost] = "east"; */
+    /* else if(ghostAngle[ghost]%4 == 2) */
+    /*     ghosteye[ghost] = "west"; */
 
-    //ghostX+=0.01;
-    glTranslatef(ghostX[ghost], ghostY[ghost], ghostZ[ghost]);
-    glRotatef((ghostAngle[ghost]%4)*90, 0, 1, 0);
+    /* //ghostX+=0.01; */
+    /* glTranslatef(ghostX[ghost], ghostY[ghost], ghostZ[ghost]); */
+    /* glRotatef((ghostAngle[ghost]%4)*90, 0, 1, 0); */
 
     /* printf("ghostX: %f, ghostY: %f, ghostZ: %f\n", ghostX, ghostY, ghostZ); */
 
