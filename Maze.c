@@ -25,6 +25,8 @@ float camPos[] = {100, 200, 100};
 
 int test=0;
 
+bool done = false;
+
 //setting the window height and width
 const float w = 800;
 const float h = 800;
@@ -44,6 +46,8 @@ bool southPlayer = false;
 
 int viewXOrigin = 0;
 int viewYOrigin = 0;
+
+bool ghostCaught = false;
 
 
 GLfloat light_pos[] = {60,100.0,60,1.0};
@@ -74,6 +78,8 @@ char *ghosteye[3] = {"north","north","north"};
 
 int oldMouseX;
 int oldMouseY;
+
+int waitTime = 20;
 
 //bool on off's
 bool calcMode = true;
@@ -149,10 +155,10 @@ GLubyte* LoadPPM(char* file, int* width, int* height, int* max)
     fscanf(fd,"%[^\n] ",b);
     if(b[0]!='P'|| b[1] != '3')
     {
-        printf("%s is not a PPM file!\n",file);
+ //       printf("%s is not a PPM file!\n",file);
         exit(0);
     }
-    printf("%s is a PPM file\n", file);
+//    printf("%s is a PPM file\n", file);
     fscanf(fd, "%c",&c);
     while(c == '#')
     {
@@ -163,7 +169,7 @@ GLubyte* LoadPPM(char* file, int* width, int* height, int* max)
     ungetc(c,fd);
     fscanf(fd, "%d %d %d", &n, &m, &k);
 
-    printf("%d rows  %d columns  max value= %d\n",n,m,k);
+//    printf("%d rows  %d columns  max value= %d\n",n,m,k);
 
     nm = n*m;
 
@@ -414,6 +420,12 @@ void keyboard(unsigned char key, int x, int y){
             camPos2[0] =playerX;
             camPos2[1] =playerY;
             camPos2[2] =playerZ;
+            ghostCaught = false;
+            done = false;
+            ghostX[0] = playerX; ghostY[0] = 3; ghostZ[0] = playerZ;
+            ghostAngle[0] = 0;  
+            ghostStart = 0;
+            ghosteye[0] = "north";
             break;
     }
     glutPostRedisplay();
@@ -568,19 +580,24 @@ bool checkWin(){
         showWin(text.data(), text.size(), 350,350);
         reset = "Press 'r' to reset";
         showWin(reset.data(), reset.size(), 330,330);
+        done = true;
         return true;
     }
     return false;
 }
 
 bool checkLose(){
-    if (camPos2[0] == px && camPos[2]==pz){ // change to equal AI
-        std::string text, reset;
-        text = "You Lost....";
-        showWin(text.data(), text.size(), 350,350);
-        reset = "Press 'r' to reset";
-        showWin(reset.data(), reset.size(), 330,330);
-        return true;
+    if(ghostStart == waitTime){
+        if ((ghostX[0] - 2 <= camPos2[0]  &&  camPos2[0] <= ghostX[0] + 2) && (ghostZ[0] - 2 <= camPos2[2]  &&  camPos2[2] <= ghostZ[0] + 2)){ // change to equal AI
+            std::string text, reset;
+            text = "You Lost....";
+            showWin(text.data(), text.size(), 350,350);
+            reset = "Press 'r' to reset";
+            showWin(reset.data(), reset.size(), 330,330);
+            ghostCaught = true;
+            done = true;
+            return true;
+        }
     }
     return false;
 }
@@ -661,7 +678,7 @@ void fog(){
         glFogi(GL_FOG_MODE, GL_EXP);
         glFogf(GL_FOG_START, 45.0f);
         glFogf(GL_FOG_END, 1000.0f);
-        glFogf (GL_FOG_DENSITY, 0.15);
+        glFogf (GL_FOG_DENSITY, 0.10);
         glHint(GL_FOG_HINT,GL_FASTEST);
     }
 }
@@ -696,52 +713,53 @@ void idle(){
 
 void ghostAI(int ghost){
     //Check wall colision
-    bool hit = false;
-    float ghostMovment = 0.01;
-    if(ghosteye[ghost] == "north"){//90
-        hit = hitTest(ghostX[ghost], ghostZ[ghost], ghostX[ghost]+ghostMovment, ghostZ[ghost]);
-        if(!hit)
-            ghostX[ghost]+=ghostMovment;
-    }else if(ghosteye[ghost] == "south"){//270
-        hit = hitTest(ghostX[ghost], ghostZ[ghost], ghostX[ghost]-ghostMovment, ghostZ[ghost]);
-        if(!hit)
-            ghostX[ghost]-=ghostMovment;
-    }else if(ghosteye[ghost] == "east"){//0
-        hit = hitTest(ghostX[ghost], ghostZ[ghost], ghostX[ghost], ghostZ[ghost]+ghostMovment);
-        if(!hit)
-            ghostZ[ghost]+=ghostMovment;
-    }else if(ghosteye[ghost] == "west"){//180
-        hit = hitTest(ghostX[ghost], ghostZ[ghost], ghostX[ghost], ghostZ[ghost]-ghostMovment);
-        if(!hit)
-            ghostZ[ghost]-=ghostMovment;
-    }
-    /* printf("hit: %d\n", hit); */
-    if(hit){
-        if(ghost == 1){
-            ghostAngle[ghost] += rand() % 3 + 1;
-        }else if(ghost == 2){
-            ghostAngle[ghost] --;
-        }else if(ghost == 3){
-            //Follow player
+    if (!ghostCaught){
+        bool hit = false;
+        float ghostMovment = 0.01;
+        if(ghosteye[ghost] == "north"){//90
+            hit = hitTest(ghostX[ghost], ghostZ[ghost], ghostX[ghost]+ghostMovment, ghostZ[ghost]);
+            if(!hit)
+                ghostX[ghost]+=ghostMovment;
+        }else if(ghosteye[ghost] == "south"){//270
+            hit = hitTest(ghostX[ghost], ghostZ[ghost], ghostX[ghost]-ghostMovment, ghostZ[ghost]);
+            if(!hit)
+                ghostX[ghost]-=ghostMovment;
+        }else if(ghosteye[ghost] == "east"){//0
+            hit = hitTest(ghostX[ghost], ghostZ[ghost], ghostX[ghost], ghostZ[ghost]+ghostMovment);
+            if(!hit)
+                ghostZ[ghost]+=ghostMovment;
+        }else if(ghosteye[ghost] == "west"){//180
+            hit = hitTest(ghostX[ghost], ghostZ[ghost], ghostX[ghost], ghostZ[ghost]-ghostMovment);
+            if(!hit)
+                ghostZ[ghost]-=ghostMovment;
         }
+        /* printf("hit: %d\n", hit); */
+        if(hit){
+            if(ghost == 0){
+                ghostAngle[ghost] += rand() % 3 + 1;
+            }else if(ghost == 1){
+                ghostAngle[ghost] --;
+            }else if(ghost == 2){
+                //Follow player
+            }
+        }
+
+        if(ghostAngle[ghost]%4 == 3)
+            ghosteye[ghost] = "north";
+        else if(ghostAngle[ghost]%4 == 1)
+            ghosteye[ghost] = "south";
+        else if(ghostAngle[ghost]%4 == 2)
+            ghosteye[ghost] = "east";
+        else if(ghostAngle[ghost]%4 == 0)
+            ghosteye[ghost] = "west";
+
+        //ghostX+=0.01;
+        glTranslatef(playerX-ghostX[ghost], 3-ghostY[ghost], playerZ-ghostZ[ghost]);
+        glRotatef((ghostAngle[ghost]%4)*90, 0, 1, 0);
+
+        /* printf("ghostX: %f, ghostY: %f, ghostZ: %f\n", ghostX, ghostY, ghostZ); */
     }
-
-    if(ghostAngle[ghost]%4 == 3)
-        ghosteye[ghost] = "north";
-    else if(ghostAngle[ghost]%4 == 1)
-        ghosteye[ghost] = "south";
-    else if(ghostAngle[ghost]%4 == 2)
-        ghosteye[ghost] = "east";
-    else if(ghostAngle[ghost]%4 == 0)
-        ghosteye[ghost] = "west";
-
-    //ghostX+=0.01;
-    glTranslatef(playerX-ghostX[ghost], 3-ghostY[ghost], playerZ-ghostZ[ghost]);
-    glRotatef((ghostAngle[ghost]%4)*90, 0, 1, 0);
-
-    /* printf("ghostX: %f, ghostY: %f, ghostZ: %f\n", ghostX, ghostY, ghostZ); */
-
-    //Draw ghost
+        //Draw ghost
     ghostLoadObj.drawObj();
 }
 
@@ -758,7 +776,7 @@ void drawObj(){
     glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shiny1);
 
     //Object's AI
-    ghostAI(1);
+    ghostAI(0);
     //ghostAI(2);
     //ghostAI(3);
     glPopMatrix();
@@ -840,7 +858,7 @@ void display2()
 
     checkStatus();
     drawPrize();
-    if(ghostStart == 60)
+    if(ghostStart == waitTime)
         drawObj();
     glutSwapBuffers();
 }
@@ -855,11 +873,14 @@ void glutCallBacks(){
 
 
 void glutCallBacks2(){
+   
     glutDisplayFunc(display2);	//registers "display" as the display callback function
-    glutSpecialFunc(special2);
-    glutMouseFunc(mouse);
-    glutMotionFunc(motion);
-    glutPassiveMotionFunc(passive);
+    if (!done){
+        glutSpecialFunc(special2);
+        glutMouseFunc(mouse);
+        glutMotionFunc(motion);
+        glutPassiveMotionFunc(passive);
+    }
     glutKeyboardFunc(keyboard);
     glutIdleFunc(idle);
     //glutSpecialFunc(special);
@@ -881,6 +902,16 @@ int main(int argc, char** argv)
     /* window1 = glutCreateWindow("Maze Top View");	//creates the window */
     /* glutCallBacks(); */
     /* init(); */
+
+    printf("Rules:\n");    
+    printf("- The point of the game is to move through the maze and find the trophy before the ghost catches you!\n"); 
+    printf("Keyboard Actions:\n");
+    printf("- Press'r'  to reset the terrain\n"); 
+    printf("- Press the 'left' or 'right' key to move on the x axis\n"); 
+    printf("- Press the 'up' or 'down' key to move on the z axis\n"); 
+    printf("- Press the 'page up' or 'page down' key to move on the y axis\n");
+    printf("Mouse Actions:\n");
+    printf("- Move the mouse around to be able to see where you're going from player POV\n"); 
 
     glutInitWindowSize(w,h);
     glutInitWindowPosition(1000,100);
