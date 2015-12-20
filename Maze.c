@@ -57,7 +57,7 @@ bool west[22][22];
 bool visited[22][22];
 
 float playerX = 82;
-float playerY = 2;
+float playerY = 5;
 float playerZ = 82;
 float camPos2[] = {playerX,playerY,playerZ};
 
