@@ -15,6 +15,16 @@ There is a grey background for the sky with fog to create a gloomy atmosphere.
 
 The point of the game is to move through the maze and find the trophy before the ghost catches you! 
 ** note, for a more easier game, move the trophy to 83, 0, 78 (change px, py, pz);
+
+Advanced graphics features include:
+    - Lighting
+    - 2 different textures
+    - 4 materials
+    - Maze algorithm
+    - AI for the Ghost/Computer
+    - Load object and materials from obj file
+    - Advanced camera control
+    
 Keyboard Actions:
     - Press'q' to quit 
     - Press 'r' to reset
