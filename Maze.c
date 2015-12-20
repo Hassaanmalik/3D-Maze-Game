@@ -24,7 +24,7 @@ LoadObj ghostLoadObj;
 float camPos[] = {100, 200, 100};
 
 int test=0;
-
+bool lightCheck = true;
 bool done = false;
 
 //setting the window height and width
@@ -50,7 +50,11 @@ int viewYOrigin = 0;
 bool ghostCaught = false;
 
 
-GLfloat light_pos[] = {60,100.0,60,1.0};
+GLfloat light_pos[] = {77,50.0,82,1.0};
+GLfloat light_pos1[] = {87,50.0,82,1.0};
+GLfloat light_pos2[] = {82,50.0,77,1.0};
+GLfloat light_pos3[] = {82,50.0,87,1.0};
+
 
 //maze variables
 int size = 20; //change size variable to global
@@ -427,7 +431,17 @@ void keyboard(unsigned char key, int x, int y){
             ghostStart = 0;
             ghosteye[0] = "north";
             break;
+        case 'l':
+        case 'L':
+            if(lightCheck){
+                lightCheck = false;
+            }
+            else{
+                lightCheck = true;
+            }
+            break;
     }
+
     glutPostRedisplay();
 }
 void special2(int key, int x, int y)
@@ -440,18 +454,30 @@ void special2(int key, int x, int y)
             if(northPlayer && !hitTest(camPos2[0], camPos2[2], camPos2[0], camPos2[2]-1)){
                 camPos2[2] -=1;
                 light_pos[2] -=1;
+                light_pos1[2] -= 1;
+                light_pos2[2] -= 1;
+                light_pos3[2] -= 1;
             }
             else if(southPlayer && !hitTest(camPos2[0], camPos2[2], camPos2[0], camPos2[2]+1)){
                 camPos2[2] +=1;
                 light_pos[2] +=1;
+                light_pos1[2] += 1;
+                light_pos2[2] += 1;
+                light_pos3[2] += 1;
             }
             else if(eastPlayer && !hitTest(camPos2[0], camPos2[2], camPos2[0]+1, camPos2[2])){
                 camPos2[0] +=1;
                 light_pos[0] +=1;
+                light_pos1[0] += 1;
+                light_pos2[0] += 1;
+                light_pos3[0] += 1;
             }
             else if(westPlayer && !hitTest(camPos2[0], camPos2[2], camPos2[0]-1, camPos2[2])){
-                light_pos[0] -=1;
                 camPos2[0] -=1;
+                light_pos[0] -=1;
+                light_pos1[0] -= 1;
+                light_pos2[0] -= 1;
+                light_pos3[0] -= 1;
             }
             //}
             //else{
@@ -465,18 +491,31 @@ void special2(int key, int x, int y)
             if(northPlayer && !hitTest(camPos2[0], camPos2[2], camPos2[0], camPos2[2]+1)){
                 camPos2[2] += 1;
                 light_pos[2] += 1;
+                light_pos1[2] += 1;
+                light_pos2[2] += 1;
+                light_pos3[2] += 1;
+
             }
             else if(southPlayer && !hitTest(camPos2[0], camPos2[2], camPos2[0], camPos2[2]-1)){
                 camPos2[2] -=1;
-                light_pos[2] +=1;
+                light_pos[2] -=1;
+                light_pos1[2] -= 1;
+                light_pos2[2] -= 1;
+                light_pos3[2] -= 1;
             }
             else if(eastPlayer && !hitTest(camPos2[0], camPos2[2], camPos2[0]-1, camPos2[2])){
                 camPos2[0] -= 1;
                 light_pos[0] -= 1;
+                light_pos1[0] -= 1;
+                light_pos2[0] -= 1;
+                light_pos3[0] -= 1;
             }
             else if(westPlayer && !hitTest(camPos2[0], camPos2[2], camPos2[0]+1, camPos2[2])){
                 camPos2[0] +=1;
                 light_pos[0] +=1;
+                light_pos1[0] += 1;
+                light_pos2[0] += 1;
+                light_pos3[0] += 1;
             }
 
             //}
@@ -486,7 +525,9 @@ void special2(int key, int x, int y)
             break;
 
         case GLUT_KEY_LEFT:
-            viewXOrigin -= 90;
+            glutWarpPointer(w/2,h/2);
+
+            viewXOrigin = viewXOrigin - 90;
             if(northPlayer){
                 westPlayer = true;
                 northPlayer = false;
@@ -508,6 +549,8 @@ void special2(int key, int x, int y)
 
 
         case GLUT_KEY_RIGHT:
+            glutWarpPointer(w/2,h/2);
+
             viewXOrigin += 90;
             if(northPlayer){
                 eastPlayer = true;
@@ -525,7 +568,7 @@ void special2(int key, int x, int y)
                 northPlayer = true;
                 westPlayer = false;
             }
-            camPos2[0]+=1;
+            ///camPos2[0]+=1;
             break;
 
         case GLUT_KEY_HOME:
@@ -655,8 +698,50 @@ void light(){
     glLightfv(GL_LIGHT0, GL_DIFFUSE, diff0);
     glLightfv(GL_LIGHT0, GL_SPECULAR, spec0);
 
-    glEnable(GL_LIGHTING);
-    glEnable(GL_LIGHT0);
+
+    float amb1[4] = {1, 1, 1, 1};
+    float diff1[4] = {1, 1, 1, 1};
+    float spec1[4] = {1, 1, 1, 1};
+
+    // set the values for the first light source
+    glLightfv(GL_LIGHT1, GL_POSITION, light_pos1);
+    glLightfv(GL_LIGHT1, GL_AMBIENT, amb1);
+    glLightfv(GL_LIGHT1, GL_DIFFUSE, diff1);
+    glLightfv(GL_LIGHT1, GL_SPECULAR, spec1);
+
+
+    float amb2[4] = {1, 1, 1, 1};
+    float diff2[4] = {1, 1, 1, 1};
+    float spec2[4] = {1, 1, 1, 1};
+
+    // set the values for the first light source
+    glLightfv(GL_LIGHT2, GL_POSITION, light_pos2);
+    glLightfv(GL_LIGHT2, GL_AMBIENT, amb2);
+    glLightfv(GL_LIGHT2, GL_DIFFUSE, diff2);
+    glLightfv(GL_LIGHT2, GL_SPECULAR, spec2);
+
+
+    float amb3[4] = {1, 1, 1, 1};
+    float diff3[4] = {1, 1, 1, 1};
+    float spec3[4] = {1, 1, 1, 1};
+
+    // set the values for the first light source
+    glLightfv(GL_LIGHT3, GL_POSITION, light_pos3);
+    glLightfv(GL_LIGHT3, GL_AMBIENT, amb3);
+    glLightfv(GL_LIGHT3, GL_DIFFUSE, diff3);
+    glLightfv(GL_LIGHT3, GL_SPECULAR, spec3);
+
+
+    if(lightCheck){
+        glEnable(GL_LIGHTING);
+        glEnable(GL_LIGHT0);
+        glEnable(GL_LIGHT1);
+        glEnable(GL_LIGHT2);
+        glEnable(GL_LIGHT3);
+    }
+    else{
+        glDisable(GL_LIGHTING);
+    }
 
 }
 
@@ -792,15 +877,29 @@ void passive(int mouseX, int mouseY){
     float angleX =0.0f;
     float angleY=0.0f;
 
-    angleX = mouseX - mid_x;
-    angleY =  mid_y - mouseY;
+    //if(northPlayer){
+        angleX = (mouseX - mid_x)/10;
+        angleY =  (mid_y - mouseY)/5;
+   // }
+    //if(westPlayer){
+       // angleX = (mouseX - mid_x)/10;
+       // angleY = -(mid_y - mouseY)/5;
+   // }
+   // if(southPlayer){
+     //   angleX = (mouseX - mid_x)/10;
+       // angleY = (mouseY - mid_y)/5;
+   // }
     viewY = angleY;
     viewX = angleX;
-
+    //glfwSetMousePos(w/2,h/2);
     oldMouseX = mouseX;
     oldMouseY = mouseY;
-    //	printf("passive: %i,%i\n", mouseX, mouseY);
+    
 
+//x (if x > 360, x = x - 360. if x < 0, x = x + 360)
+
+
+    //	printf("passive: %i,%i\n", mouseX, mouseY);
 }
 void mouse(int btn, int state, int mouseX, int mouseY){
 }
@@ -837,15 +936,45 @@ void display2()
 
     glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
 
-    fog();
+
+    glLightfv(GL_LIGHT1, GL_POSITION, light_pos1);
+    glLightfv(GL_LIGHT2, GL_POSITION, light_pos2);
+    glLightfv(GL_LIGHT3, GL_POSITION, light_pos3);
+
+
+    //fog();
+    
     light();
+    
 
+
+    if(northPlayer){
+        glRotatef(viewXOrigin + viewX, 0.0f, 1.0, 0.0f);
+        glRotatef(-viewY, 1.0f, 0.0f, 0.0f);
+        glTranslatef(-camPos2[0], -camPos2[1], -camPos2[2]);
+    }
+    if(southPlayer){
+            glRotatef(viewXOrigin + viewX, 0.0f, 1.0, 0.0f);
+            glRotatef(viewY, 1.0f, 0.0f, 0.0f);
+            glTranslatef(-camPos2[0], -camPos2[1], -camPos2[2]);
+    }
+    if(westPlayer){
+            glRotatef(viewXOrigin + viewX, 0.0f, 1.0, 0.0f);
+            //glRotatef(viewXOrigin - , 1.0f, 0.0f, 0.0f);
+            glTranslatef(-camPos2[0], -camPos2[1], -camPos2[2]);
+    }
+    if(eastPlayer){
+            glRotatef(viewXOrigin + viewX, 0.0f, 1.0, 0.0f);
+            glTranslatef(-camPos2[0], -camPos2[1], -camPos2[2]);
+
+
+    }
     //glRotatef(45,0,1,0);
-    glRotatef(45+viewXOrigin,0,1,0);
-    gluLookAt(camPos2[0], camPos2[1], camPos2[2], viewX,viewY,0, 0,1,0);
+    //glRotatef(viewXOrigin,0,1,0);
+    //gluLookAt(camPos2[0], camPos2[1], camPos2[2], viewX,viewY-viewXOrigin,0, 0,1,0);
 
 
-    //printf("The viewX angle is %f \n the viewY angle is %f \n", viewX, viewY);
+    printf("The viewX angle is %f \n the viewY angle is %f \n", viewX, viewY);
     glColor3f(1,1,1);
 
 
