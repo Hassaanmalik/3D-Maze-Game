@@ -64,8 +64,9 @@ float camPos2[] = {playerX,playerY,playerZ};
 //float camPos2[] = {0,0,0};
 
 //Ghost cordinates
-float ghostX[3] = {0,0,0}, ghostY[3] = {0,0,0}, ghostZ[3] = {0,0,0};
+float ghostX[3] = {playerX, playerX, playerX}, ghostY[3] = {3, 3, 3}, ghostZ[3] = {playerZ, playerZ, playerZ};
 int ghostAngle[3] = {0,0,0};
+int ghostStart = 0;
 
 //Ghost's eye loaction
 char *ghosteye[3] = {"north","north","north"};
@@ -377,25 +378,25 @@ void drawFloor(){
 }
 
 bool hitTest(float cX, float cZ, float pX, float pZ){
-    printf("cX: %f, cZ: %f, pX: %f, pZ: %f\n", cX, cZ, pX, pZ);
-    int i = floor(cX/6);
-    int j = floor(cZ/6);
-    printf("i: %i,j: %i, ",i,j);
-    printf("north: %d, ", north[i][j]);
-    printf("south: %d, ", south[i][j]);
-    printf("east: %d, ", east[i][j]);
-    printf("west: %d\n", west[i][j]);
+    /* printf("cX: %f, cZ: %f, pX: %f, pZ: %f\n", cX, cZ, pX, pZ); */
+    int i = floor(cX/n);
+    int j = floor(cZ/n);
+    /* printf("i: %i,j: %i, ",i,j); */
+    /* printf("north: %d, ", north[i][j]); */
+    /* printf("south: %d, ", south[i][j]); */
+    /* printf("east: %d, ", east[i][j]); */
+    /* printf("west: %d\n", west[i][j]); */
     if(pZ > cZ){//North for camera and North for maze
-        printf("North\n");
+        /* printf("North\n"); */
         return north[i][j];
     }else if(pZ < cZ){//South for camera and South for maze
-        printf("South\n");
+        /* printf("South\n"); */
         return south[i][j];
     }else if(pX > cX){//East for camera and East for maze
-        printf("East\n");
+        /* printf("East\n"); */
         return east[i][j];
     }else if(pX < cX){//West for camera and West for maze
-        printf("West\n");
+        /* printf("West\n"); */
         return west[i][j];
     }
 }
@@ -442,28 +443,13 @@ void special2(int key, int x, int y)
             }
             //}
             //else{
-            //	camPos2[2] -= 1;
+            /* camPos2[2] -= 1; */
             //}
             break;
 
         case GLUT_KEY_DOWN:
             //if(hitTest(camPos2[0],camPos2[2])){
-            /* if(northPlayer){ */
-            /*     camPos2[2] += 1; */
-            /*     light_pos[2] += 1; */
-            /* } */
-            /* else if(southPlayer){ */
-            /*     camPos2[2] -=1; */
-            /*     light_pos[2] +=1; */
-            /* } */
-            /* else if(eastPlayer){ */
-            /*     camPos2[0] -= 1; */
-            /*     light_pos[0] -= 1; */
-            /* } */
-            /* else if(westPlayer){ */
-            /*     camPos2[0] +=1; */
-            /*     light_pos[0] +=1; */
-            /* } */
+
             if(northPlayer && !hitTest(camPos2[0], camPos2[2], camPos2[0], camPos2[2]+1)){
                 camPos2[2] += 1;
                 light_pos[2] += 1;
@@ -483,7 +469,7 @@ void special2(int key, int x, int y)
 
             //}
             //else{
-            //	camPos2[2] += 1;
+            /* camPos2[2] += 1; */
             //}
             break;
 
@@ -505,7 +491,9 @@ void special2(int key, int x, int y)
                 northPlayer = true;
                 eastPlayer = false;
             }
+            /* camPos2[0] -= 1; */
             break;
+
 
         case GLUT_KEY_RIGHT:
             viewXOrigin += 90;
@@ -525,8 +513,8 @@ void special2(int key, int x, int y)
                 northPlayer = true;
                 westPlayer = false;
             }
+            camPos2[0]+=1;
             break;
-
 
         case GLUT_KEY_HOME:
             camPos2[1] += 1;
@@ -539,6 +527,7 @@ void special2(int key, int x, int y)
             break;
 
     }
+    ghostStart ++;
     glutPostRedisplay();
 }
 
@@ -706,38 +695,49 @@ void idle(){
 }
 
 void ghostAI(int ghost){
-    /* //Check wall colision */
-    /* if(ghosteye[ghost] == "north")//90 */
-    /*     ghostX[ghost]+=0.01; */
-    /* else if(ghosteye[ghost] == "south")//270 */
-    /*     ghostX[ghost]-=0.01; */
-    /* else if(ghosteye[ghost] == "east")//0 */
-    /*     ghostZ[ghost]+=0.01; */
-    /* else if(ghosteye[ghost] == "west")//180 */
-    /*     ghostZ[ghost]-=0.01; */
+    //Check wall colision
+    bool hit = false;
+    float ghostMovment = 0.01;
+    if(ghosteye[ghost] == "north"){//90
+        hit = hitTest(ghostX[ghost], ghostZ[ghost], ghostX[ghost]+ghostMovment, ghostZ[ghost]);
+        if(!hit)
+            ghostX[ghost]+=ghostMovment;
+    }else if(ghosteye[ghost] == "south"){//270
+        hit = hitTest(ghostX[ghost], ghostZ[ghost], ghostX[ghost]-ghostMovment, ghostZ[ghost]);
+        if(!hit)
+            ghostX[ghost]-=ghostMovment;
+    }else if(ghosteye[ghost] == "east"){//0
+        hit = hitTest(ghostX[ghost], ghostZ[ghost], ghostX[ghost], ghostZ[ghost]+ghostMovment);
+        if(!hit)
+            ghostZ[ghost]+=ghostMovment;
+    }else if(ghosteye[ghost] == "west"){//180
+        hit = hitTest(ghostX[ghost], ghostZ[ghost], ghostX[ghost], ghostZ[ghost]-ghostMovment);
+        if(!hit)
+            ghostZ[ghost]-=ghostMovment;
+    }
+    /* printf("hit: %d\n", hit); */
+    if(hit){
+        if(ghost == 1){
+            ghostAngle[ghost] += rand() % 3 + 1;
+        }else if(ghost == 2){
+            ghostAngle[ghost] --;
+        }else if(ghost == 3){
+            //Follow player
+        }
+    }
 
-    /* if(hitTest(ghostX[ghost], ghostZ[ghost])){ */
-    /*     if(ghost == 1){ */
-    /*         ghostAngle[ghost] ++; */
-    /*     }else if(ghost == 2){ */
-    /*         ghostAngle[ghost] --; */
-    /*     }else if(ghost == 3){ */
-    /*         //Follow player */
-    /*     } */
-    /* } */
+    if(ghostAngle[ghost]%4 == 3)
+        ghosteye[ghost] = "north";
+    else if(ghostAngle[ghost]%4 == 1)
+        ghosteye[ghost] = "south";
+    else if(ghostAngle[ghost]%4 == 2)
+        ghosteye[ghost] = "east";
+    else if(ghostAngle[ghost]%4 == 0)
+        ghosteye[ghost] = "west";
 
-    /* if(ghostAngle[ghost]%4 == 1) */
-    /*     ghosteye[ghost] = "north"; */
-    /* else if(ghostAngle[ghost]%4 == 3) */
-    /*     ghosteye[ghost] = "south"; */
-    /* else if(ghostAngle[ghost]%4 == 0) */
-    /*     ghosteye[ghost] = "east"; */
-    /* else if(ghostAngle[ghost]%4 == 2) */
-    /*     ghosteye[ghost] = "west"; */
-
-    /* //ghostX+=0.01; */
-    /* glTranslatef(ghostX[ghost], ghostY[ghost], ghostZ[ghost]); */
-    /* glRotatef((ghostAngle[ghost]%4)*90, 0, 1, 0); */
+    //ghostX+=0.01;
+    glTranslatef(playerX-ghostX[ghost], 3-ghostY[ghost], playerZ-ghostZ[ghost]);
+    glRotatef((ghostAngle[ghost]%4)*90, 0, 1, 0);
 
     /* printf("ghostX: %f, ghostY: %f, ghostZ: %f\n", ghostX, ghostY, ghostZ); */
 
@@ -748,9 +748,9 @@ void ghostAI(int ghost){
 void drawObj(){
     glPushMatrix();
     //object's stating location and rotation
-    glRotatef(90, -1, 0, 0);
-    glTranslatef(0, 0, 0);
-    glScalef(.5, .5, .5);
+    /* glRotatef(90, -1, 0, 0); */
+    glTranslatef(playerX, 3, playerZ);
+    glScalef(0.4, 0.4, 0.4);
     /* ghostLoadObj.mtlForObj(); */
     glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, m_amb1);
     glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, m_diff1);
@@ -758,7 +758,7 @@ void drawObj(){
     glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shiny1);
 
     //Object's AI
-    //ghostAI(1);
+    ghostAI(1);
     //ghostAI(2);
     //ghostAI(3);
     glPopMatrix();
@@ -812,7 +812,6 @@ void display(void)
 }
 void display2()
 {
-
     //size/2.0 + 6, 0, size/2.0 + 6
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glMatrixMode(GL_MODELVIEW);
@@ -820,7 +819,7 @@ void display2()
 
     glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
 
-    //fog();
+    fog();
     light();
 
     //glRotatef(45,0,1,0);
@@ -841,7 +840,8 @@ void display2()
 
     checkStatus();
     drawPrize();
-    //drawObj();
+    if(ghostStart == 60)
+        drawObj();
     glutSwapBuffers();
 }
 
