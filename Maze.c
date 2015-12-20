@@ -32,10 +32,11 @@ const float wMid = w/2;
 const float hMid = h/2;
 
 // coordinates for the prize
-int px = 13;
+int px = 10;
 int py = 5;
 int pz = 8;
-// for easy do (83, 0, 78)
+// for easy do (83, 0, 78);
+
 bool northPlayer = true;
 bool eastPlayer = false;
 bool westPlayer = false;
@@ -59,6 +60,7 @@ float playerX = 82;
 float playerY = 2;
 float playerZ = 82;
 float camPos2[] = {playerX,playerY,playerZ};
+
 //float camPos2[] = {0,0,0};
 
 //Ghost cordinates
@@ -609,7 +611,7 @@ void drawPrize(){
 
 
     // move to that position in the maze
-    glTranslatef(px+4,2,pz+4);
+    glTranslatef(px+4,0,pz+4);
     glRotatef(90,1,0,0);
     glutSolidCone(1,1,20,20);
     GLUquadricObj *quadratic= gluNewQuadric();
