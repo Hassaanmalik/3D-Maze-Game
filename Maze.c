@@ -780,6 +780,8 @@ void init(void){
 
 }
 void init2(void){
+    glutWarpPointer(w/2,h/2);
+
     glClearColor(0.3, 0.3, 0.3, 0.1);
     glColor3f(1, 1, 1);
 
