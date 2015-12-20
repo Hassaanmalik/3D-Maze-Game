@@ -418,6 +418,9 @@ void keyboard(unsigned char key, int x, int y){
         case 'r':
             calcMode = true;
             cleanArrays();
+            camPos2[0] =playerX;
+            camPos2[1] =playerY;
+            camPos2[2] =playerZ;
             break;
     }
     glutPostRedisplay();
@@ -579,9 +582,11 @@ bool checkWin(){
 	//printf ("px: %i, cam %i\n", px, i);
 	//printf ("pz: %i, cam %i\n", pz, j);
    	if (px-1 <=i && i >= px +1 && pz  == j){
-        std::string text;
+        std::string text, reset;
         text = "You Won!";
-        showWin(text.data(), text.size(), 300,350);
+        showWin(text.data(), text.size(), 350,350);
+        reset = "Press 'r' to reset";
+        showWin(reset.data(), reset.size(), 330,330);
         return true;
     }
     return false;
@@ -589,9 +594,11 @@ bool checkWin(){
 
 bool checkLose(){
     if (camPos2[0] == px && camPos[2]==pz){ // change to equal AI
-        std::string text;
+        std::string text, reset;
         text = "You Lost....";
-        showWin(text.data(), text.size(), 300,350);
+        showWin(text.data(), text.size(), 350,350);
+        reset = "Press 'r' to reset";
+        showWin(reset.data(), reset.size(), 330,330);
         return true;
     }
     return false;
@@ -625,13 +632,15 @@ void drawPrize(){
 
 void checkStatus(){
     // if win; need to fix this code so it will exit upon a win condition (ie Trevor?)
-    if(checkWin()){
+   /* if(checkWin()){
       //  exit(1);
     	printf("win\n");
     }
     if(checkLose()){
         exit(1);
-    }
+    } */
+    checkWin();
+    checkLose();
 }
 
 void light(){
