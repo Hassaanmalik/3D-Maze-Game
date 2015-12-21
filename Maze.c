@@ -80,7 +80,8 @@ int ghostStart = 0;
 char *ghosteye[3] = {"north","north","north"};
 
 
-
+//boolean for walls
+bool wallOn = true;
 
 int waitTime = 20;
 
@@ -439,6 +440,14 @@ void keyboard(unsigned char key, int x, int y){
                 lightCheck = true;
             }
             break;
+        case 'w':
+        case 'W':
+            if(wallOn){
+                wallOn=false;
+            }
+            else{
+                wallOn=true;
+            }
     }
 
     glutPostRedisplay();
@@ -971,9 +980,11 @@ void display2()
 
     //code for drawing the maze
     size = 20;
-    mazeStarter();
-    generateMaze();
-    drawMesh();
+    if(wallOn){
+        mazeStarter();
+        generateMaze();
+        drawMesh();
+    }
     drawFloor();
 
     checkStatus();
@@ -983,12 +994,12 @@ void display2()
     glutSwapBuffers();
 }
 
-void glutCallBacks(){
+/*void glutCallBacks(){
     glutDisplayFunc(display);	//registers "display" as the display callback function
     glutKeyboardFunc(keyboard); //registers "keyboard" as the keyboard callback function
     //glutSpecialFunc(special);	//registers "special" as the special function callback
     glutIdleFunc(idle);
-}
+}*/
 
 
 
@@ -1027,6 +1038,7 @@ int main(int argc, char** argv)
     printf("- The point of the game is to move through the maze and find the trophy before the ghost catches you!\n");
     printf("Keyboard Actions:\n");
     printf("- Press'r'  to reset the maze\n");
+    printf("- Press'w'  to turn walls on/off\n");
     printf("- Press the 'left' or 'right' key to move on the x axis\n");
     printf("- Press the 'up' or 'down' key to move on the z axis\n");
     printf("- Press the 'page up' or 'page down' key to move on the y axis\n");
@@ -1041,7 +1053,7 @@ int main(int argc, char** argv)
     init2();
 
     glEnable(GL_TEXTURE_2D);
-    glGenTextures(3, textures); //generate 3 texture IDs, store them in array "textures"
+    glGenTextures(2, textures); //generate 2 texture IDs, store them in array "textures"
     texture();
 
     glEnable(GL_DEPTH_TEST);
