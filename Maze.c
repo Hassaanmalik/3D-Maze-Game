@@ -69,6 +69,9 @@ float playerY = 5;//starting player positions
 float playerZ = 82;
 float camPos2[] = {playerX,playerY,playerZ};
 
+// status of game
+bool win = false, lose = false;
+
 //boolean for walls
 bool wallOn = true;
 
@@ -432,6 +435,8 @@ void keyboard(unsigned char key, int x, int y){
             ghostX[1] = playerX; ghostY[1] = 3; ghostZ[1] = playerZ; ghostAngle[1] = 0; ghosteye[1] = "north";
             ghostStart = 0;
             viewXOrigin = 0;
+            lose = false;
+            win = false;
             glutWarpPointer(w/2,h/2);
             break;
         case 'l':
@@ -639,7 +644,7 @@ bool checkWin(){
 	int j = (int)camPos2[2];
 	//printf ("px: %i, cam %i\n", px, i);
 	//printf ("pz: %i, cam %i\n", pz, j);
-   	if (px-1 <=i && i >= px +1 && pz  == j){
+   	if ((px-1 <=i && i >= px +1 && pz  == j)||win){
         std::string text, reset;
         text = "You Won!";
         showWin(text.data(), text.size(), 350,350);
@@ -652,7 +657,7 @@ bool checkWin(){
 }
 
 bool checkLose(){
-    if(ghostStart >= waitTime){
+    if(ghostStart >= waitTime || lose){
         if (((ghostX[0] - 2 <= camPos2[0]  &&  camPos2[0] <= ghostX[0] + 2) && (ghostZ[0] - 2 <= camPos2[2]  &&  camPos2[2] <= ghostZ[0] + 2)) ||
                 ((ghostX[1] - 2 <= camPos2[0]  &&  camPos2[0] <= ghostX[1] + 2) && (ghostZ[1] - 2 <= camPos2[2]  &&  camPos2[2] <= ghostZ[1] + 2))){ // change to equal AI
             std::string text, reset;
@@ -703,8 +708,8 @@ void checkStatus(){
     if(checkLose()){
         exit(1);
     } */
-    checkWin();
-    checkLose();
+   win = checkWin();
+   lose = checkLose();
 }
 
 void light(){
