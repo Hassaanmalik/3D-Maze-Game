@@ -835,9 +835,10 @@ void ghostAI(int ghost){
         /* printf("hit: %d\n", hit); */
         if(hit){
             if(ghost == 0){
-                ghostAngle[ghost] += rand() % 3 + 1;
+                ghostAngle[ghost] = rand() % 3 + 1;
             }else if(ghost == 1){
-                ghostAngle[ghost] -= rand() % 3 + 1;
+                ghostAngle[ghost] = rand() % 3 + 1;
+                ghostAngle[ghost] = rand() % 3 + 1;
             }else if(ghost == 2){
                 //Follow player
             }
@@ -853,8 +854,8 @@ void ghostAI(int ghost){
             ghosteye[ghost] = "west";
 
         //ghostX+=0.01;
-        glTranslatef(playerX-ghostX[ghost], 3-ghostY[ghost], playerZ-ghostZ[ghost]);
-        glRotatef((ghostAngle[ghost]%4)*90, 0, 1, 0);
+        glTranslatef(-(playerX-ghostX[ghost]), 3-ghostY[ghost], -(playerZ-ghostZ[ghost]));
+        glRotatef(-((ghostAngle[ghost]%4)*90), 0, 1, 0);
 
         /* printf("ghostX: %f, ghostY: %f, ghostZ: %f\n", ghostX, ghostY, ghostZ); */
     }
@@ -879,6 +880,9 @@ void drawObj(){
     ghostAI(1);
     //ghostAI(2);
     glPopMatrix();
+    /* printf("Camera: %f, %f, %f\n", camPos2[0], camPos2[1], camPos2[2]); */
+    /* printf("Ghost 0: %f, %f, %f\n", ghostX[0], ghostY[0], ghostZ[0]); */
+    /* printf("Ghost 1: %f, %f, %f\n", ghostX[1], ghostY[1], ghostZ[1]); */
 }
 void motion(int mouseX, int mouseY){
 
@@ -992,6 +996,8 @@ void display2()
     if(ghostStart >= waitTime)
         drawObj();
     glutSwapBuffers();
+
+
 }
 
 /*void glutCallBacks(){
