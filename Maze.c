@@ -641,7 +641,7 @@ bool checkWin(){
 }
 
 bool checkLose(){
-    if(ghostStart == waitTime){
+    if(ghostStart >= waitTime){
         if (((ghostX[0] - 2 <= camPos2[0]  &&  camPos2[0] <= ghostX[0] + 2) && (ghostZ[0] - 2 <= camPos2[2]  &&  camPos2[2] <= ghostZ[0] + 2)) ||
                 ((ghostX[1] - 2 <= camPos2[0]  &&  camPos2[0] <= ghostX[1] + 2) && (ghostZ[1] - 2 <= camPos2[2]  &&  camPos2[2] <= ghostZ[1] + 2))){ // change to equal AI
             std::string text, reset;
@@ -989,7 +989,7 @@ void display2()
 
     checkStatus();
     drawPrize();
-    if(ghostStart == waitTime)
+    if(ghostStart >= waitTime)
         drawObj();
     glutSwapBuffers();
 }
