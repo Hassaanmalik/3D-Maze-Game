@@ -51,7 +51,7 @@ bool ghostCaught = false;
 
 
 GLfloat light_pos[] = {77,50.0,82,1.0};
-GLfloat light_pos1[] = {87,50.0,82,1.0};
+GLfloat light_pos1[] = {87,50.0,82,1.0};//starting light positions surrounding the player
 GLfloat light_pos2[] = {82,50.0,77,1.0};
 GLfloat light_pos3[] = {82,50.0,87,1.0};
 
@@ -65,7 +65,7 @@ bool west[22][22];
 bool visited[22][22];
 
 float playerX = 82;
-float playerY = 5;
+float playerY = 5;//starting player positions
 float playerZ = 82;
 float camPos2[] = {playerX,playerY,playerZ};
 
@@ -80,8 +80,7 @@ int ghostStart = 0;
 char *ghosteye[3] = {"north","north","north"};
 
 
-int oldMouseX;
-int oldMouseY;
+
 
 int waitTime = 20;
 
@@ -100,12 +99,8 @@ int n = 6;
 int halfN = n/2;
 
 //camera variables
-float movementSpeedFactor;
-float pitchSensitivity;
-float yawSensitivity;
-float position;
-float rotation;
-float speed;
+
+
 float viewX=0;
 float viewY=0;
 float viewZ=0;
@@ -418,14 +413,19 @@ void keyboard(unsigned char key, int x, int y){
         case 27:
             exit (0);
             break;
-        case 'r':
+        case 'r'://resets the maze
+        case 'R':
             calcMode = true;
             cleanArrays();
             camPos2[0] =playerX;
             camPos2[1] =playerY;
             camPos2[2] =playerZ;
+            northPlayer = true;
+            southPlayer = false;
+            eastPlayer = false;
+            westPlayer = false;
             ghostCaught = false;
-            done = false;
+                done = false;
             ghostX[0] = playerX; ghostY[0] = 3; ghostZ[0] = playerZ;
             ghostAngle[0] = 0;  
             ghostStart = 0;
@@ -434,7 +434,7 @@ void keyboard(unsigned char key, int x, int y){
         case 'l':
         case 'L':
             if(lightCheck){
-                lightCheck = false;
+                lightCheck = false;//switch lighting on or off
             }
             else{
                 lightCheck = true;
@@ -449,8 +449,10 @@ void special2(int key, int x, int y)
     /* arrow key presses move the camera */
     switch(key)
     {
+        //moves the player in a forward direction with the lights following
         case GLUT_KEY_UP:
             //if(hitTest(camPos2[0],camPos2[2])){
+
             if(northPlayer && !hitTest(camPos2[0], camPos2[2], camPos2[0], camPos2[2]-1)){
                 camPos2[2] -=1;
                 light_pos[2] -=1;
@@ -461,7 +463,7 @@ void special2(int key, int x, int y)
             else if(southPlayer && !hitTest(camPos2[0], camPos2[2], camPos2[0], camPos2[2]+1)){
                 camPos2[2] +=1;
                 light_pos[2] +=1;
-                light_pos1[2] += 1;
+                light_pos1[2] += 1; 
                 light_pos2[2] += 1;
                 light_pos3[2] += 1;
             }
@@ -469,7 +471,7 @@ void special2(int key, int x, int y)
                 camPos2[0] +=1;
                 light_pos[0] +=1;
                 light_pos1[0] += 1;
-                light_pos2[0] += 1;
+                light_pos2[0] += 1;  
                 light_pos3[0] += 1;
             }
             else if(westPlayer && !hitTest(camPos2[0], camPos2[2], camPos2[0]-1, camPos2[2])){
@@ -484,7 +486,7 @@ void special2(int key, int x, int y)
             /* camPos2[2] -= 1; */
             //}
             break;
-
+            //moves the player in a backward direction with the lights following
         case GLUT_KEY_DOWN:
             //if(hitTest(camPos2[0],camPos2[2])){
 
@@ -524,8 +526,9 @@ void special2(int key, int x, int y)
             //}
             break;
 
+            //reorients the player to their current left 
         case GLUT_KEY_LEFT:
-            glutWarpPointer(w/2,h/2);
+            glutWarpPointer(w/2,h/2);//centers the cursor in the screen
 
             viewXOrigin = viewXOrigin - 90;
             if(northPlayer){
@@ -547,9 +550,9 @@ void special2(int key, int x, int y)
             /* camPos2[0] -= 1; */
             break;
 
-
+            //reorients the player to their current right 
         case GLUT_KEY_RIGHT:
-            glutWarpPointer(w/2,h/2);
+            glutWarpPointer(w/2,h/2);//centers cursor on the middle of the screen
 
             viewXOrigin += 90;
             if(northPlayer){
@@ -570,11 +573,11 @@ void special2(int key, int x, int y)
             }
             ///camPos2[0]+=1;
             break;
-
+            //zoooms out
         case GLUT_KEY_HOME:
             camPos2[1] += 1;
             break;
-
+            //zooms in
         case GLUT_KEY_END:
             //if(camPos2[1]>10){
             camPos2[1] -= 1;
@@ -703,7 +706,7 @@ void light(){
     float diff1[4] = {1, 1, 1, 1};
     float spec1[4] = {1, 1, 1, 1};
 
-    // set the values for the first light source
+    // set the values for the second light source
     glLightfv(GL_LIGHT1, GL_POSITION, light_pos1);
     glLightfv(GL_LIGHT1, GL_AMBIENT, amb1);
     glLightfv(GL_LIGHT1, GL_DIFFUSE, diff1);
@@ -714,7 +717,7 @@ void light(){
     float diff2[4] = {1, 1, 1, 1};
     float spec2[4] = {1, 1, 1, 1};
 
-    // set the values for the first light source
+    // set the values for the third light source
     glLightfv(GL_LIGHT2, GL_POSITION, light_pos2);
     glLightfv(GL_LIGHT2, GL_AMBIENT, amb2);
     glLightfv(GL_LIGHT2, GL_DIFFUSE, diff2);
@@ -725,7 +728,7 @@ void light(){
     float diff3[4] = {1, 1, 1, 1};
     float spec3[4] = {1, 1, 1, 1};
 
-    // set the values for the first light source
+    // set the values for the fourth light source
     glLightfv(GL_LIGHT3, GL_POSITION, light_pos3);
     glLightfv(GL_LIGHT3, GL_AMBIENT, amb3);
     glLightfv(GL_LIGHT3, GL_DIFFUSE, diff3);
@@ -780,7 +783,7 @@ void init(void){
 
 }
 void init2(void){
-    glutWarpPointer(w/2,h/2);
+    glutWarpPointer(w/2,h/2);//begins game with cursor in center of screen
 
     glClearColor(0.3, 0.3, 0.3, 0.1);
     glColor3f(1, 1, 1);
@@ -873,35 +876,20 @@ void motion(int mouseX, int mouseY){
 
 }
 void passive(int mouseX, int mouseY){
-    //SetCursorPos(0,0);
     int mid_x = w/2;
-    int mid_y = h/2	;
+    int mid_y = h/2	;//sets values for center of screen
     float angleX =0.0f;
     float angleY=0.0f;
 
-    //if(northPlayer){
-        angleX = (mouseX - mid_x)/10;
-        angleY =  (mid_y - mouseY)/5;
-   // }
-    //if(westPlayer){
-       // angleX = (mouseX - mid_x)/10;
-       // angleY = -(mid_y - mouseY)/5;
-   // }
-   // if(southPlayer){
-     //   angleX = (mouseX - mid_x)/10;
-       // angleY = (mouseY - mid_y)/5;
-   // }
+    
+    angleX = (mouseX - mid_x)/10;//sets angle x based on the x position of the mouse with a restricted field of vision
+    angleY =  (mid_y - mouseY)/5;//sets angle y based on the y position of the mouse with a restricted field of vision
+   
     viewY = angleY;
     viewX = angleX;
-    //glfwSetMousePos(w/2,h/2);
-    oldMouseX = mouseX;
-    oldMouseY = mouseY;
+
     
 
-//x (if x > 360, x = x - 360. if x < 0, x = x + 360)
-
-
-    //	printf("passive: %i,%i\n", mouseX, mouseY);
 }
 void mouse(int btn, int state, int mouseX, int mouseY){
 }
@@ -944,12 +932,12 @@ void display2()
     glLightfv(GL_LIGHT3, GL_POSITION, light_pos3);
 
 
-    //fog();
+    fog();
     
     light();
     
 
-
+    //based on the players current orientation in regards to the maze sets the ability to move the cameras orientation based on the mouse position.
     if(northPlayer){
         glRotatef(viewXOrigin + viewX, 0.0f, 1.0, 0.0f);
         glRotatef(-viewY, 1.0f, 0.0f, 0.0f);
@@ -960,9 +948,10 @@ void display2()
             glRotatef(viewY, 1.0f, 0.0f, 0.0f);
             glTranslatef(-camPos2[0], -camPos2[1], -camPos2[2]);
     }
+    //NOTE: hidden easter egg, the player can only look up and down when faceing 2 directions (north and south), if the player realises this they can use it to their
+    //advantage to keep track of where they are going and where they are coming from
     if(westPlayer){
             glRotatef(viewXOrigin + viewX, 0.0f, 1.0, 0.0f);
-            //glRotatef(viewXOrigin - , 1.0f, 0.0f, 0.0f);
             glTranslatef(-camPos2[0], -camPos2[1], -camPos2[2]);
     }
     if(eastPlayer){
@@ -976,7 +965,7 @@ void display2()
     //gluLookAt(camPos2[0], camPos2[1], camPos2[2], viewX,viewY-viewXOrigin,0, 0,1,0);
 
 
-    printf("The viewX angle is %f \n the viewY angle is %f \n", viewX, viewY);
+   // printf("The viewX angle is %f \n the viewY angle is %f \n", viewX, viewY);
     glColor3f(1,1,1);
 
 
@@ -1041,6 +1030,7 @@ int main(int argc, char** argv)
     printf("- Press the 'left' or 'right' key to move on the x axis\n"); 
     printf("- Press the 'up' or 'down' key to move on the z axis\n"); 
     printf("- Press the 'page up' or 'page down' key to move on the y axis\n");
+    printf("- Press the 'l' key to turn on the lighting... if you need it\n");
     printf("Mouse Actions:\n");
     printf("- Move the mouse around to be able to see where you're going from player POV\n"); 
 
