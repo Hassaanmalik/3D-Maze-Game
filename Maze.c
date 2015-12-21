@@ -425,11 +425,10 @@ void keyboard(unsigned char key, int x, int y){
             eastPlayer = false;
             westPlayer = false;
             ghostCaught = false;
-                done = false;
-            ghostX[0] = playerX; ghostY[0] = 3; ghostZ[0] = playerZ;
-            ghostAngle[0] = 0;  
+            done = false;
+            ghostX[0] = playerX; ghostY[0] = 3; ghostZ[0] = playerZ; ghostAngle[0] = 0; ghosteye[0] = "north";
+            ghostX[1] = playerX; ghostY[1] = 3; ghostZ[1] = playerZ; ghostAngle[1] = 0; ghosteye[1] = "north";
             ghostStart = 0;
-            ghosteye[0] = "north";
             break;
         case 'l':
         case 'L':
@@ -463,7 +462,7 @@ void special2(int key, int x, int y)
             else if(southPlayer && !hitTest(camPos2[0], camPos2[2], camPos2[0], camPos2[2]+1)){
                 camPos2[2] +=1;
                 light_pos[2] +=1;
-                light_pos1[2] += 1; 
+                light_pos1[2] += 1;
                 light_pos2[2] += 1;
                 light_pos3[2] += 1;
             }
@@ -471,7 +470,7 @@ void special2(int key, int x, int y)
                 camPos2[0] +=1;
                 light_pos[0] +=1;
                 light_pos1[0] += 1;
-                light_pos2[0] += 1;  
+                light_pos2[0] += 1;
                 light_pos3[0] += 1;
             }
             else if(westPlayer && !hitTest(camPos2[0], camPos2[2], camPos2[0]-1, camPos2[2])){
@@ -526,7 +525,7 @@ void special2(int key, int x, int y)
             //}
             break;
 
-            //reorients the player to their current left 
+            //reorients the player to their current left
         case GLUT_KEY_LEFT:
             glutWarpPointer(w/2,h/2);//centers the cursor in the screen
 
@@ -550,7 +549,7 @@ void special2(int key, int x, int y)
             /* camPos2[0] -= 1; */
             break;
 
-            //reorients the player to their current right 
+            //reorients the player to their current right
         case GLUT_KEY_RIGHT:
             glutWarpPointer(w/2,h/2);//centers cursor on the middle of the screen
 
@@ -634,7 +633,8 @@ bool checkWin(){
 
 bool checkLose(){
     if(ghostStart == waitTime){
-        if ((ghostX[0] - 2 <= camPos2[0]  &&  camPos2[0] <= ghostX[0] + 2) && (ghostZ[0] - 2 <= camPos2[2]  &&  camPos2[2] <= ghostZ[0] + 2)){ // change to equal AI
+        if (((ghostX[0] - 2 <= camPos2[0]  &&  camPos2[0] <= ghostX[0] + 2) && (ghostZ[0] - 2 <= camPos2[2]  &&  camPos2[2] <= ghostZ[0] + 2)) ||
+                ((ghostX[1] - 2 <= camPos2[0]  &&  camPos2[0] <= ghostX[1] + 2) && (ghostZ[1] - 2 <= camPos2[2]  &&  camPos2[2] <= ghostZ[1] + 2))){ // change to equal AI
             std::string text, reset;
             text = "You Lost....";
             showWin(text.data(), text.size(), 350,350);
@@ -805,7 +805,7 @@ void ghostAI(int ghost){
     //Check wall colision
     if (!ghostCaught){
         bool hit = false;
-        float ghostMovment = 0.01;
+        float ghostMovment = 0.1;
         if(ghosteye[ghost] == "north"){//90
             hit = hitTest(ghostX[ghost], ghostZ[ghost], ghostX[ghost]+ghostMovment, ghostZ[ghost]);
             if(!hit)
@@ -828,7 +828,7 @@ void ghostAI(int ghost){
             if(ghost == 0){
                 ghostAngle[ghost] += rand() % 3 + 1;
             }else if(ghost == 1){
-                ghostAngle[ghost] --;
+                ghostAngle[ghost] -= rand() % 3 + 1;
             }else if(ghost == 2){
                 //Follow player
             }
@@ -867,8 +867,8 @@ void drawObj(){
 
     //Object's AI
     ghostAI(0);
+    ghostAI(1);
     //ghostAI(2);
-    //ghostAI(3);
     glPopMatrix();
 }
 void motion(int mouseX, int mouseY){
@@ -881,14 +881,14 @@ void passive(int mouseX, int mouseY){
     float angleX =0.0f;
     float angleY=0.0f;
 
-    
+
     angleX = (mouseX - mid_x)/10;//sets angle x based on the x position of the mouse with a restricted field of vision
     angleY =  (mid_y - mouseY)/5;//sets angle y based on the y position of the mouse with a restricted field of vision
-   
+
     viewY = angleY;
     viewX = angleX;
 
-    
+
 
 }
 void mouse(int btn, int state, int mouseX, int mouseY){
@@ -933,9 +933,9 @@ void display2()
 
 
     fog();
-    
+
     light();
-    
+
 
     //based on the players current orientation in regards to the maze sets the ability to move the cameras orientation based on the mouse position.
     if(northPlayer){
@@ -993,7 +993,7 @@ void glutCallBacks(){
 
 
 void glutCallBacks2(){
-   
+
     glutDisplayFunc(display2);	//registers "display" as the display callback function
     if (!done){
         glutSpecialFunc(special2);
@@ -1023,16 +1023,16 @@ int main(int argc, char** argv)
     /* glutCallBacks(); */
     /* init(); */
 
-    printf("Rules:\n");    
-    printf("- The point of the game is to move through the maze and find the trophy before the ghost catches you!\n"); 
+    printf("Rules:\n");
+    printf("- The point of the game is to move through the maze and find the trophy before the ghost catches you!\n");
     printf("Keyboard Actions:\n");
-    printf("- Press'r'  to reset the terrain\n"); 
-    printf("- Press the 'left' or 'right' key to move on the x axis\n"); 
-    printf("- Press the 'up' or 'down' key to move on the z axis\n"); 
+    printf("- Press'r'  to reset the maze\n");
+    printf("- Press the 'left' or 'right' key to move on the x axis\n");
+    printf("- Press the 'up' or 'down' key to move on the z axis\n");
     printf("- Press the 'page up' or 'page down' key to move on the y axis\n");
     printf("- Press the 'l' key to turn on the lighting... if you need it\n");
     printf("Mouse Actions:\n");
-    printf("- Move the mouse around to be able to see where you're going from player POV\n"); 
+    printf("- Move the mouse around to be able to see where you're going from player POV\n");
 
     glutInitWindowSize(w,h);
     glutInitWindowPosition(1000,100);
