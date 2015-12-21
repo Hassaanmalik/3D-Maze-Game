@@ -430,6 +430,7 @@ void keyboard(unsigned char key, int x, int y){
             ghostX[0] = playerX; ghostY[0] = 3; ghostZ[0] = playerZ; ghostAngle[0] = 0; ghosteye[0] = "north";
             ghostX[1] = playerX; ghostY[1] = 3; ghostZ[1] = playerZ; ghostAngle[1] = 0; ghosteye[1] = "north";
             ghostStart = 0;
+            glutWarpPointer(w/2,h/2);
             break;
         case 'l':
         case 'L':
@@ -671,7 +672,7 @@ void drawPrize(){
 
 
     // move to that position in the maze
-    glTranslatef(px+4,0,pz+4);
+    glTranslatef(px+4,3,pz+4);
     glRotatef(90,1,0,0);
     glutSolidCone(1,1,20,20);
     GLUquadricObj *quadratic= gluNewQuadric();
