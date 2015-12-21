@@ -69,7 +69,12 @@ float playerY = 5;//starting player positions
 float playerZ = 82;
 float camPos2[] = {playerX,playerY,playerZ};
 
-//float camPos2[] = {0,0,0};
+//boolean for walls
+bool wallOn = true;
+
+//boolean for fog
+
+bool fogOn = true;
 
 //Ghost cordinates
 float ghostX[3] = {playerX, playerX, playerX}, ghostY[3] = {3, 3, 3}, ghostZ[3] = {playerZ, playerZ, playerZ};
@@ -78,10 +83,6 @@ int ghostStart = 0;
 
 //Ghost's eye loaction
 char *ghosteye[3] = {"north","north","north"};
-
-
-//boolean for walls
-bool wallOn = true;
 
 int waitTime = 20;
 
@@ -414,7 +415,7 @@ void keyboard(unsigned char key, int x, int y){
         case 27:
             exit (0);
             break;
-        case 'r'://resets the maze
+        case 'r'://resets the maze and all of the variables 
         case 'R':
             calcMode = true;
             cleanArrays();
@@ -430,6 +431,7 @@ void keyboard(unsigned char key, int x, int y){
             ghostX[0] = playerX; ghostY[0] = 3; ghostZ[0] = playerZ; ghostAngle[0] = 0; ghosteye[0] = "north";
             ghostX[1] = playerX; ghostY[1] = 3; ghostZ[1] = playerZ; ghostAngle[1] = 0; ghosteye[1] = "north";
             ghostStart = 0;
+            viewXOrigin = 0;
             glutWarpPointer(w/2,h/2);
             break;
         case 'l':
@@ -448,6 +450,14 @@ void keyboard(unsigned char key, int x, int y){
             }
             else{
                 wallOn=true;
+            }
+        case 'f':
+        case 'F':
+            if(fogOn){
+                fogOn=false;
+            }
+            else{
+                fogOn=true;
             }
     }
 
@@ -945,8 +955,10 @@ void display2()
     glLightfv(GL_LIGHT2, GL_POSITION, light_pos2);
     glLightfv(GL_LIGHT3, GL_POSITION, light_pos3);
 
-
-    fog();
+    if(fogOn){
+        fog();
+    }
+    
 
     light();
 
@@ -1046,6 +1058,7 @@ int main(int argc, char** argv)
     printf("Keyboard Actions:\n");
     printf("- Press'r'  to reset the maze\n");
     printf("- Press'w'  to turn walls on/off\n");
+    printf("- Press'f'  to turn fog on/off\n");
     printf("- Press the 'left' or 'right' key to move on the x axis\n");
     printf("- Press the 'up' or 'down' key to move on the z axis\n");
     printf("- Press the 'page up' or 'page down' key to move on the y axis\n");
